@@ -7,8 +7,9 @@ import 'OtpState.dart';
 class OtpCubit extends Cubit<OtpState> {
   final AuthRepositoryContract authRepositoryContract;
   List<TextEditingController> controllers =
-  List.generate(5, (index) => TextEditingController()); // عدلنا من 6 لـ 5
-  List<FocusNode> focusNodes = List.generate(5, (index) => FocusNode()); // عدلنا من 6 لـ 5
+      List.generate(5, (index) => TextEditingController()); // عدلنا من 6 لـ 5
+  List<FocusNode> focusNodes =
+      List.generate(5, (index) => FocusNode()); // عدلنا من 6 لـ 5
   Timer? _timer;
   int _resendCountdown = 30;
   bool _canResend = false;
@@ -38,15 +39,16 @@ class OtpCubit extends Cubit<OtpState> {
 
   Future<void> verifyCode(BuildContext context, String email) async {
     String verifyCode = controllers.map((controller) => controller.text).join();
-    if (verifyCode.length != 5) { // عدلنا من 6 لـ 5
-      emit(OtpErrorState(errorMessage: "Please enter a 5-digit code")); // عدلنا الرسالة
+    if (verifyCode.length != 5) {
+      // عدلنا من 6 لـ 5
+      emit(OtpErrorState(
+          errorMessage: "Please enter a 5-digit code")); // عدلنا الرسالة
       return;
     }
 
     emit(OtpLoadingState());
     try {
-      var response =
-      await authRepositoryContract.verifyCode(email, verifyCode);
+      var response = await authRepositoryContract.verifyCode(email, verifyCode);
       if (response.status == "success") {
         emit(OtpSuccessState(response: response));
       } else {

@@ -9,7 +9,7 @@ import 'package:graduation_project/Profile_screen/bloc/Address/Address_bloc.dart
 import 'package:graduation_project/Profile_screen/bloc/Address/Address_event.dart';
 import 'package:graduation_project/Profile_screen/bloc/Address/Address_state.dart';
 import 'package:graduation_project/Theme/theme.dart';
-import 'edir_address_screen.dart';
+import 'edit_address_screen.dart';
 
 class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key});
@@ -322,7 +322,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                         ),
                       ),
                       subtitle: Text(
-                        '${address.addressStreet ?? ''}, ${address.addressCity ?? ''}\nPhone: ${address.addressPhone ?? 'No Phone'}',
+                        '${address.addressStreet ?? ''}, ${address.addressCity ?? ''}\nPhone: ${address.addressPhone ?? '' }',
                         style: textTheme.bodyMedium?.copyWith(
                           color: MyTheme.grayColor2,
                           fontSize: 12.sp,

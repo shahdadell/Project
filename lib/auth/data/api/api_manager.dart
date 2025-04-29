@@ -132,11 +132,12 @@ class ApiManager {
     try {
       var response = await _postWithTokenRefresh(url, requestBody.toJson());
       var registerResponse =
-      RegisterresponseNew.fromJson(jsonDecode(response.body));
+          RegisterresponseNew.fromJson(jsonDecode(response.body));
       if (registerResponse.token != null) {
         await AppLocalStorage.cacheData('token', registerResponse.token);
         if (registerResponse.token != null) {
-          await AppLocalStorage.cacheData('refresh_token', registerResponse.token);
+          await AppLocalStorage.cacheData(
+              'refresh_token', registerResponse.token);
         }
       }
       return registerResponse;
@@ -195,12 +196,14 @@ class ApiManager {
   Future<VerfiyCodeForgetPasswordResponse> verifyCodeForgetPassword(
       String email, String verifycode) async {
     Uri url =
-    Uri.https(ApiConstants.baseUrl, ApiConstants.verifyCodeForgetPassword);
-    var requestBody = OtpScreenForgetPassword(email: email, verifycode: verifycode);
+        Uri.https(ApiConstants.baseUrl, ApiConstants.verifyCodeForgetPassword);
+    var requestBody =
+        OtpScreenForgetPassword(email: email, verifycode: verifycode);
 
     try {
       var response = await _postWithTokenRefresh(url, requestBody.toJson());
-      return VerfiyCodeForgetPasswordResponse.fromJson(jsonDecode(response.body));
+      return VerfiyCodeForgetPasswordResponse.fromJson(
+          jsonDecode(response.body));
     } catch (e) {
       print('Verify code forget password error: $e');
       throw Exception('Failed to verify code for forget password: $e');

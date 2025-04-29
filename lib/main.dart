@@ -12,6 +12,7 @@ import 'package:graduation_project/auth/forget_password/reset_password/ResetPass
 import 'package:graduation_project/home_screen/UI/Home_Page/home_screen.dart';
 import 'package:graduation_project/home_screen/UI/Items_Page/Items_screen.dart';
 import 'package:graduation_project/home_screen/UI/Category_Page/Services_Screen.dart';
+import 'package:graduation_project/home_screen/UI/SpecialOfferCarouselWidget/offers_screen.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/UI/WishlistScreen.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/bloc/FavoriteBloc.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/data/repo/FavoriteRepo.dart';
@@ -33,11 +34,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 
+// تعريف GlobalKey للـ Navigator
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("Background message received: ${message.notification?.title}");
-  // الإضافة الجديدة: تخزين الإشعار في الـ local storage
   await NotificationManager.saveNotification(message);
 }
 
@@ -49,11 +51,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // الإضافات الجديدة
   await NotificationManager.requestNotificationPermission();
   await NotificationManager.subscribeToTopics();
 
-  // الإشعارات في الـ foreground
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print("Foreground message received: ${message.notification?.title}");
     NotificationManager.saveNotification(message);
@@ -62,7 +62,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-// باقي الكود زي ما هو
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -82,9 +81,10 @@ class MyApp extends StatelessWidget {
             create: (context) => AddressBloc(AddressRepo()),
           ),
           BlocProvider(
-            create: (context) => FavoriteBloc(favoriteRepo: FavoriteRepo())),
+              create: (context) => FavoriteBloc(favoriteRepo: FavoriteRepo())),
         ],
         child: MaterialApp(
+          navigatorKey: navigatorKey, // تمرير الـ GlobalKey للـ MaterialApp
           debugShowCheckedModeBanner: false,
           theme: MyTheme.lightTheme,
           initialRoute: SplashScreen.routName,
@@ -120,7 +120,9 @@ class MyApp extends StatelessWidget {
               );
             },
             WishlistScreen.routeName: (context) => const WishlistScreen(),
-            NotificationScreen.routeName: (context) => const NotificationScreen(),
+            NotificationScreen.routeName: (context) =>
+                const NotificationScreen(),
+            OffersScreen.routeName: (context) => const OffersScreen(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == ServicesScreen.routeName) {

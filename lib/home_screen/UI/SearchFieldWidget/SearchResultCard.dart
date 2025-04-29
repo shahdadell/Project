@@ -173,8 +173,8 @@ class ItemResultCard extends StatelessWidget {
                     width: 60.w,
                     height: 50.h,
                     color: MyTheme.grayColor.withOpacity(0.2),
-                    child:
-                        Icon(Icons.error, size: 20.sp, color: MyTheme.grayColor2),
+                    child: Icon(Icons.error,
+                        size: 20.sp, color: MyTheme.grayColor2),
                   ),
                 ),
               ),

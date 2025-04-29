@@ -60,32 +60,33 @@ class TopSellingListWidget extends StatelessWidget {
               if (kDebugMode) {
                 print("Top Selling Items Loaded: ${state.topSelling.length}");
               }
-              final itemCount = state.topSelling.length > 4 ? 5 : state.topSelling.length;
+              final itemCount =
+                  state.topSelling.length > 4 ? 5 : state.topSelling.length;
               return SizedBox(
                 height: 200.h,
                 child: state.topSelling.isEmpty
                     ? Center(
-                  child: Text(
-                    "No top selling items available",
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      color: Colors.grey[500],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                )
+                        child: Text(
+                          "No top selling items available",
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            color: Colors.grey[500],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )
                     : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  itemCount: itemCount,
-                  itemBuilder: (context, index) {
-                    if (index == 4 && state.topSelling.length > 4) {
-                      return _buildShowMoreCard(context);
-                    }
-                    final item = state.topSelling[index];
-                    return buildTopSellingCard(context, item);
-                  },
-                ),
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        itemCount: itemCount,
+                        itemBuilder: (context, index) {
+                          if (index == 4 && state.topSelling.length > 4) {
+                            return _buildShowMoreCard(context);
+                          }
+                          final item = state.topSelling[index];
+                          return buildTopSellingCard(context, item);
+                        },
+                      ),
               );
             } else if (state is HomeErrorState) {
               if (kDebugMode) {
@@ -127,7 +128,9 @@ class TopSellingListWidget extends StatelessWidget {
                       SizedBox(height: 20.h),
                       GestureDetector(
                         onTap: () {
-                          context.read<HomeBloc>().add(FetchHomeDataEvent(null));
+                          context
+                              .read<HomeBloc>()
+                              .add(FetchHomeDataEvent(null));
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(

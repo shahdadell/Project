@@ -54,7 +54,8 @@ class OtpScreen extends StatelessWidget {
                 posActionName: 'Ok',
               );
             } else {
-              DialogUtils.showMessage(context, errorMessage, posActionName: 'Ok');
+              DialogUtils.showMessage(context, errorMessage,
+                  posActionName: 'Ok');
             }
           } else if (state is OtpSuccessState) {
             if (Navigator.canPop(context)) {
@@ -98,7 +99,8 @@ class OtpScreen extends StatelessWidget {
             backgroundColor: MyTheme.orangeColor,
             elevation: 4,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16.r)),
+              borderRadius:
+                  BorderRadius.vertical(bottom: Radius.circular(16.r)),
             ),
             title: Text(
               "Verification Code",
@@ -108,11 +110,11 @@ class OtpScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ).animate().fadeIn(duration: 400.ms).slideY(
-              begin: 0.1,
-              end: 0.0,
-              duration: 400.ms,
-              curve: Curves.easeOut,
-            ),
+                  begin: 0.1,
+                  end: 0.0,
+                  duration: 400.ms,
+                  curve: Curves.easeOut,
+                ),
           ),
           body: Container(
             color: MyTheme.whiteColor,
@@ -120,7 +122,8 @@ class OtpScreen extends StatelessWidget {
               builder: (context) {
                 final cubit = BlocProvider.of<OtpCubit>(context);
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -130,11 +133,11 @@ class OtpScreen extends StatelessWidget {
                           width: 140.w,
                           height: 140.h,
                         ).animate().fadeIn(duration: 500.ms).scale(
-                          begin: Offset(0.8, 0.8),
-                          end: Offset(1.0, 1.0),
-                          duration: 500.ms,
-                          curve: Curves.easeOut,
-                        ),
+                              begin: Offset(0.8, 0.8),
+                              end: Offset(1.0, 1.0),
+                              duration: 500.ms,
+                              curve: Curves.easeOut,
+                            ),
                         SizedBox(height: 15.h),
                         Text(
                           "Enter the 5-digit code sent to your email",
@@ -145,11 +148,11 @@ class OtpScreen extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ).animate().fadeIn(duration: 500.ms).slideY(
-                          begin: 0.1,
-                          end: 0.0,
-                          duration: 500.ms,
-                          curve: Curves.easeOut,
-                        ),
+                              begin: 0.1,
+                              end: 0.0,
+                              duration: 500.ms,
+                              curve: Curves.easeOut,
+                            ),
                         SizedBox(height: 5.h),
                         Text(
                           "We've sent a code to $email",
@@ -160,11 +163,11 @@ class OtpScreen extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ).animate().fadeIn(duration: 500.ms).slideY(
-                          begin: 0.1,
-                          end: 0.0,
-                          duration: 500.ms,
-                          curve: Curves.easeOut,
-                        ),
+                              begin: 0.1,
+                              end: 0.0,
+                              duration: 500.ms,
+                              curve: Curves.easeOut,
+                            ),
                         SizedBox(height: 20.h),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -172,11 +175,11 @@ class OtpScreen extends StatelessWidget {
                             return _buildOtpField(context, cubit, index);
                           }),
                         ).animate().fadeIn(duration: 600.ms).slideY(
-                          begin: 0.1,
-                          end: 0.0,
-                          duration: 600.ms,
-                          curve: Curves.easeOut,
-                        ),
+                              begin: 0.1,
+                              end: 0.0,
+                              duration: 600.ms,
+                              curve: Curves.easeOut,
+                            ),
                         SizedBox(height: 20.h),
                         BlocBuilder<OtpCubit, OtpState>(
                           builder: (context, state) {
@@ -218,24 +221,28 @@ class OtpScreen extends StatelessWidget {
                             );
                           },
                         ).animate().fadeIn(duration: 600.ms).slideY(
-                          begin: 0.1,
-                          end: 0.0,
-                          duration: 600.ms,
-                          curve: Curves.easeOut,
-                        ),
+                              begin: 0.1,
+                              end: 0.0,
+                              duration: 600.ms,
+                              curve: Curves.easeOut,
+                            ),
                         SizedBox(height: 30.h),
                         BlocBuilder<OtpCubit, OtpState>(
                           builder: (context, state) {
-                            String code = cubit.controllers.map((controller) => controller.text).join();
+                            String code = cubit.controllers
+                                .map((controller) => controller.text)
+                                .join();
                             bool isEnabled = code.length == 5;
                             return _buildButton(
                               context,
                               text: "Verify",
-                              color: isEnabled ? MyTheme.orangeColor : MyTheme.grayColor,
+                              color: isEnabled
+                                  ? MyTheme.orangeColor
+                                  : MyTheme.grayColor,
                               onPressed: isEnabled
                                   ? () {
-                                cubit.verifyCode(context, email);
-                              }
+                                      cubit.verifyCode(context, email);
+                                    }
                                   : null,
                             );
                           },
@@ -283,7 +290,8 @@ class OtpScreen extends StatelessWidget {
           counterText: '',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(color: MyTheme.grayColor2, width: 1.w), // Border رمادي افتراضي
+            borderSide: BorderSide(
+                color: MyTheme.grayColor2, width: 1.w), // Border رمادي افتراضي
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
@@ -291,7 +299,9 @@ class OtpScreen extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(color: MyTheme.orangeColor, width: 1.5.w), // Border برتقالي لما يتركز
+            borderSide: BorderSide(
+                color: MyTheme.orangeColor,
+                width: 1.5.w), // Border برتقالي لما يتركز
           ),
         ),
         onChanged: (value) {
@@ -308,11 +318,11 @@ class OtpScreen extends StatelessWidget {
   }
 
   Widget _buildButton(
-      BuildContext context, {
-        required String text,
-        required Color color,
-        VoidCallback? onPressed,
-      }) {
+    BuildContext context, {
+    required String text,
+    required Color color,
+    VoidCallback? onPressed,
+  }) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -332,17 +342,21 @@ class OtpScreen extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-    ).animate().scale(
-      begin: Offset(1.0, 1.0),
-      end: Offset(1.05, 1.05),
-      duration: Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    ).then().scale(
-      begin: Offset(1.05, 1.05),
-      end: Offset(1.0, 1.0),
-      duration: Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
+    )
+        .animate()
+        .scale(
+          begin: Offset(1.0, 1.0),
+          end: Offset(1.05, 1.05),
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        )
+        .then()
+        .scale(
+          begin: Offset(1.05, 1.05),
+          end: Offset(1.0, 1.0),
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
   }
 }
 

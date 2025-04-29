@@ -69,7 +69,8 @@ class NotificationApiService {
               .map((json) => ApiNotification.fromJson(json))
               .toList();
         } else {
-          throw Exception('Failed to load notifications: ${jsonResponse['status']}');
+          throw Exception(
+              'Failed to load notifications: ${jsonResponse['status']}');
         }
       } else {
         throw Exception('Failed to load notifications: ${response.statusCode}');
@@ -111,7 +112,8 @@ class NotificationApiService {
       if (response.statusCode == 200) {
         print('Successfully subscribed to welcome topic for user $userId');
       } else {
-        throw Exception('Failed to subscribe to welcome topic: ${response.statusCode}');
+        throw Exception(
+            'Failed to subscribe to welcome topic: ${response.statusCode}');
       }
     } catch (e) {
       print('Error subscribing to welcome topic: $e');

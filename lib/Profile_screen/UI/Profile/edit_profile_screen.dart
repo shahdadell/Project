@@ -171,7 +171,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: _showImagePickerOptions, // إظهار خيارات اختيار الصورة
+                        onTap:
+                            _showImagePickerOptions, // إظهار خيارات اختيار الصورة
                         child: _image != null
                             ? Stack(
                                 children: [
@@ -211,7 +212,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                 ],
                               )
-                            : buildProfileImage(widget.profile?.usersImage, true),
+                            : buildProfileImage(
+                                widget.profile?.usersImage, true),
                       ),
                       SizedBox(height: 16.h),
                       _buildProfileCard(context),

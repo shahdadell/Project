@@ -16,15 +16,12 @@ import 'package:graduation_project/auth/data/repository/auth_repository/data_sou
 import 'package:graduation_project/auth/data/repository/auth_repository/repository/auth_repository_impl.dart';
 import 'package:graduation_project/auth/domain/repository/repository/auth_repository_contract.dart';
 import 'package:graduation_project/auth/forget_password/check_email/forget_password_bottom_sheet.dart';
-// import 'package:graduation_project/auth/sign_up_screen/sign_up_screen.dart';
 import 'package:graduation_project/auth/sing_in_screen/cubit/login_screen_viewmodel.dart';
 import 'package:graduation_project/auth/sing_in_screen/cubit/login_state.dart';
 import 'package:graduation_project/auth/sing_in_screen/text_filed_login.dart';
 import 'package:graduation_project/functions/navigation.dart';
-// import 'package:graduation_project/home_screen/UI/Home_Page/home_screen.dart';
 import 'package:graduation_project/local_data/shared_preference.dart';
 import '../../main_screen/main_screen.dart';
-
 
 class SignInScreen extends StatefulWidget {
   static const String routName = 'SignInScreen';
@@ -38,41 +35,6 @@ class _SignInScreenState extends State<SignInScreen> {
   LoginScreenViewmodel viewmodel = LoginScreenViewmodel(
     repositoryContract: injectAuthRepositoryContract(),
   );
-
-  @override
-  void initState() {
-    super.initState();
-    checkToken();
-  }
-
-  void checkToken() async {
-    final token = AppLocalStorage.getData('token');
-    if (token != null && token.isNotEmpty) {
-      showLoadingDialog(context);
-      final userId = AppLocalStorage.getData('user_id');
-      if (userId != null) {
-        final profileBloc = ProfileBloc(ProfileRepo());
-        profileBloc.add(FetchProfileEvent(userId.toString()));
-        await for (final profileState in profileBloc.stream) {
-          if (profileState is ProfileLoaded) {
-            final username = profileState.profile.data?.usersName;
-            await AppLocalStorage.cacheData(
-                AppLocalStorage.userNameKey, username);
-            break;
-          } else if (profileState is ProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content:
-                      Text('Failed to load profile: ${profileState.message}')),
-            );
-            break;
-          }
-        }
-      }
-      Navigator.of(context).pop();
-      pushWithReplacement(context, const NavBarWidget());
-    }
-  }
 
   @override
   void dispose() {
@@ -121,6 +83,8 @@ class _SignInScreenState extends State<SignInScreen> {
           if (userId != null) {
             await AppLocalStorage.cacheData('user_id', userId);
             await AppLocalStorage.cacheData('token', state.response.token);
+            await AppLocalStorage.cacheData(
+                'token_timestamp', DateTime.now().millisecondsSinceEpoch); // Added token_timestamp
 
             final profileBloc = ProfileBloc(ProfileRepo());
             profileBloc.add(FetchProfileEvent(userId.toString()));
@@ -142,9 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
               }
             }
 
-            // الإضافة الجديدة: إعادة الاشتراك في الـ topics بعد تسجيل الدخول
             await NotificationManager.subscribeToTopics();
-
             pushAndRemoveUntil(context, const NavBarWidget());
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -212,7 +174,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         return "E-mail is required";
                       }
                       bool emailValid = RegExp(
-                          r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                           .hasMatch(value);
                       if (!emailValid) {
                         return 'Please Enter Valid Email';
@@ -285,44 +247,44 @@ class _SignInScreenState extends State<SignInScreen> {
                           .copyWith(fontSize: 13.sp),
                     ),
                   ),
-                  SizedBox(height: 30.h),
-                  Divider(indent: 5.w, endIndent: 5.w),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(10.w),
-                        child: Text(
-                          "or sign in with",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(fontSize: 12.sp),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Material(
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(10.r),
-                          shadowColor: Colors.black.withOpacity(0.2),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.r),
-                            child: Image.asset(
-                              AppImages.google,
-                              width: 40.w,
-                              height: 40.h,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // SizedBox(height: 30.h),
+                  // Divider(indent: 5.w, endIndent: 5.w),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Padding(
+                  //       padding: EdgeInsets.all(10.w),
+                  //       child: Text(
+                  //         "or sign in with",
+                  //         style: Theme.of(context)
+                  //             .textTheme
+                  //             .bodySmall!
+                  //             .copyWith(fontSize: 12.sp),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     InkWell(
+                  //       onTap: () {},
+                  //       child: Material(
+                  //         elevation: 3,
+                  //         borderRadius: BorderRadius.circular(10.r),
+                  //         shadowColor: Colors.black.withOpacity(0.2),
+                  //         child: ClipRRect(
+                  //           borderRadius: BorderRadius.circular(10.r),
+                  //           child: Image.asset(
+                  //             AppImages.google,
+                  //             width: 40.w,
+                  //             height: 40.h,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

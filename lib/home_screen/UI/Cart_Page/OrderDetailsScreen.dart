@@ -8,7 +8,6 @@ import '../../bloc/Cart/orders_state.dart';
 import '../../data/model/orders_model_response/DetailsResponse.dart';
 import '../../data/repo/orders_repo.dart';
 
-
 class OrderDetailsScreen extends StatelessWidget {
   final String ordersId;
 
@@ -84,7 +83,8 @@ class OrderDetailsScreen extends StatelessWidget {
                       SizedBox(height: 20.h),
                       Text(
                         'No items found for this order',
-                        style: MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
+                        style:
+                            MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
                           fontSize: 18.sp,
                           color: MyTheme.mauveColor,
                         ),

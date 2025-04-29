@@ -50,7 +50,8 @@ class NotificationModel {
 }
 
 class NotificationManager {
-  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  static final FirebaseMessaging _firebaseMessaging =
+      FirebaseMessaging.instance;
 
   // طلب إذن الإشعارات
   static Future<void> requestNotificationPermission() async {
@@ -69,7 +70,8 @@ class NotificationManager {
 
     final int? userId = AppLocalStorage.getData('user_id');
     if (userId != null) {
-      final String? previousUserId = AppLocalStorage.getData('previous_user_id');
+      final String? previousUserId =
+          AppLocalStorage.getData('previous_user_id');
       if (previousUserId != null && previousUserId != userId.toString()) {
         await _firebaseMessaging.unsubscribeFromTopic('users$previousUserId');
         print('Unsubscribed from old topic: users$previousUserId');
@@ -119,7 +121,8 @@ class NotificationManager {
     if (!alreadyExists) {
       notifications.add(notification);
 
-      notifications.sort((a, b) => DateTime.parse(b.timestamp).compareTo(DateTime.parse(a.timestamp)));
+      notifications.sort((a, b) =>
+          DateTime.parse(b.timestamp).compareTo(DateTime.parse(a.timestamp)));
 
       await AppLocalStorage.cacheData(
         'notifications',
@@ -131,7 +134,8 @@ class NotificationManager {
   }
 
   // تخزين إشعار من الـ API
-  static Future<void> saveNotificationFromApi(NotificationModel notification) async {
+  static Future<void> saveNotificationFromApi(
+      NotificationModel notification) async {
     List<NotificationModel> notifications = await getNotifications();
 
     bool alreadyExists = notifications.any((n) =>
@@ -142,7 +146,8 @@ class NotificationManager {
     if (!alreadyExists) {
       notifications.add(notification);
 
-      notifications.sort((a, b) => DateTime.parse(b.timestamp).compareTo(DateTime.parse(a.timestamp)));
+      notifications.sort((a, b) =>
+          DateTime.parse(b.timestamp).compareTo(DateTime.parse(a.timestamp)));
 
       await AppLocalStorage.cacheData(
         'notifications',
@@ -167,7 +172,8 @@ class NotificationManager {
           return true; // إشعارات API تفضل دايمًا
         } else if (notification.expiryDate != null) {
           final expiryDate = DateTime.parse(notification.expiryDate!);
-          return expiryDate.isAfter(DateTime.now()); // احتفظ بالإشعارات اللي لسه صالحة
+          return expiryDate
+              .isAfter(DateTime.now()); // احتفظ بالإشعارات اللي لسه صالحة
         }
         return false;
       }).toList();

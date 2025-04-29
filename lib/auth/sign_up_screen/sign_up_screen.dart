@@ -32,23 +32,10 @@ class SignUpScreenState extends State<SignUpScreen> {
   );
 
   @override
-  void initState() {
-    super.initState();
-    // checkToken();
-  }
-
-  void checkToken() async {
-    final token = AppLocalStorage.getData('token');
-    if (token != null && token.isNotEmpty) {
-      pushWithReplacement(context, OtpScreen(email: '',));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocListener<RegisterScreenViewmodel, RegisterState>(
       bloc: viewmodel,
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is RegisterLoadingState) {
           showLoadingDialog(context);
         } else if (state is RegisterErrorState) {
@@ -56,6 +43,15 @@ class SignUpScreenState extends State<SignUpScreen> {
           showAppDialog(context, state.errorMessage!);
         } else if (state is RegisterSuccessState) {
           DialogUtils.hideLoading(context);
+          // Store token, token_timestamp, and user_id
+          final token = state.response.token;
+          final userId = state.response.userId;
+          if (token != null && userId != null) {
+            await AppLocalStorage.cacheData('token', token);
+            await AppLocalStorage.cacheData('user_id', userId);
+            await AppLocalStorage.cacheData(
+                'token_timestamp', DateTime.now().millisecondsSinceEpoch);
+          }
           DialogUtils.showMessage(context, state.response.message ?? '',
               posActionName: 'Ok', posAction: () {
             if (viewmodel.emailController.text.isNotEmpty) {
@@ -176,9 +172,8 @@ class SignUpScreenState extends State<SignUpScreen> {
                     type: TextInputType.phone,
                     action: TextInputAction.done,
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly, // يقبل أرقام فقط
-                      LengthLimitingTextInputFormatter(
-                          11), // الحد الأقصى 11 رقم
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(11),
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -200,35 +195,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                         .copyWith(fontSize: 14.sp),
                   ),
                   SizedBox(height: 4.h),
-                  // TextFiledSignup(
-                  //   controller: viewmodel.passwordController,
-                  //   text: 'Password',
-                  //   icon: Icons.lock,
-                  //   type: TextInputType.visiblePassword,
-                  //   action: TextInputAction.done,
-                  //   password: true,
-                  //   validator: (value) {
-                  //     if (value == null || value.isEmpty) {
-                  //       return "Password is required";
-                  //     }
-                  //     if (value.length < 8) {
-                  //       return "Password must be at least 8 characters long";
-                  //     }
-                  //     if (!RegExp(r'[a-z]').hasMatch(value)) {
-                  //       return "Password must contain at least one lowercase letter";
-                  //     }
-                  //     if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                  //       return "Password must contain at least one uppercase letter";
-                  //     }
-                  //     if (!RegExp(r'[0-9]').hasMatch(value)) {
-                  //       return "Password must contain at least one number";
-                  //     }
-                  //     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                  //       return "Password must contain at least one special character";
-                  //     }
-                  //     return null;
-                  //   },
-                  // ),
                   TextFiledSignup(
                     controller: viewmodel.passwordController,
                     text: 'Password',
@@ -268,41 +234,41 @@ class SignUpScreenState extends State<SignUpScreen> {
                           .copyWith(fontSize: 13.sp),
                     ),
                   ),
-                  SizedBox(height: 15.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 300.w,
-                        child: Image.asset(
-                          "assets/images/Separator2.png",
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Material(
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(10.r),
-                          shadowColor: Colors.black.withOpacity(0.2),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.r),
-                            child: Image.asset(
-                              AppImages.google,
-                              width: 40.w,
-                              height: 40.h,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // SizedBox(height: 15.h),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     SizedBox(
+                  //       width: 300.w,
+                  //       child: Image.asset(
+                  //         "assets/images/Separator2.png",
+                  //         fit: BoxFit.contain,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: 10.h),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     InkWell(
+                  //       onTap: () {},
+                  //       child: Material(
+                  //         elevation: 3,
+                  //         borderRadius: BorderRadius.circular(10.r),
+                  //         shadowColor: Colors.black.withOpacity(0.2),
+                  //         child: ClipRRect(
+                  //           borderRadius: BorderRadius.circular(10.r),
+                  //           child: Image.asset(
+                  //             AppImages.google,
+                  //             width: 40.w,
+                  //             height: 40.h,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

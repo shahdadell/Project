@@ -47,11 +47,9 @@ class MainScreen extends StatelessWidget {
                       Navigator.of(context).pushNamed(SignInScreen.routName);
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 8.h), // تقليل الـ padding
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
                       backgroundColor: MyTheme.orangeColor,
-                      minimumSize:
-                          Size(double.infinity, 15.h), // عرض كامل وارتفاع مناسب
+                      minimumSize: Size(double.infinity, 15.h),
                     ),
                     child: Text(
                       textAlign: TextAlign.center,
@@ -59,7 +57,7 @@ class MainScreen extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .displayMedium!
-                          .copyWith(fontSize: 14.sp), // تقليل حجم النص
+                          .copyWith(fontSize: 14.sp),
                     ),
                   ),
                   SizedBox(height: 10.h),
@@ -93,39 +91,36 @@ class MainScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 10.h),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigator.of(context)
-                      //     .pushReplacementNamed(HomeScreen.routName);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 8.h), // تقليل الـ padding
-                      backgroundColor: MyTheme.blueColor,
-                      minimumSize:
-                          Size(double.infinity, 15.h), // عرض كامل وارتفاع مناسب
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          AppImages.google,
-                          width: 20.w, // تقليل حجم الأيقونة
-                          height: 20.h,
-                        ),
-                        SizedBox(width: 8.w), // تقليل المسافة
-                        Text(
-                          textAlign: TextAlign.center,
-                          "Continue with Google",
-                          style: Theme.of(context)
-                              .textTheme
-                              .displaySmall!
-                              .copyWith(fontSize: 14.sp), // تقليل حجم النص
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 30.h),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // Navigator.of(context)
+                  //     //     .pushReplacementNamed(HomeScreen.routName);
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: EdgeInsets.symmetric(vertical: 8.h),
+                  //     backgroundColor: MyTheme.blueColor,
+                  //     minimumSize: Size(double.infinity, 15.h),
+                  //   ),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Image.asset(
+                  //         AppImages.google,
+                  //         width: 20.w,
+                  //         height: 20.h,
+                  //       ),
+                  //       SizedBox(width: 8.w),
+                  //       Text(
+                  //         textAlign: TextAlign.center,
+                  //         "Continue with Google",
+                  //         style: Theme.of(context)
+                  //             .textTheme
+                  //             .displaySmall!
+                  //             .copyWith(fontSize: 14.sp),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

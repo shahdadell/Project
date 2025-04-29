@@ -60,7 +60,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       if (kDebugMode) {
         print("FetchHomeDataEvent Succeeded");
-        print("Categories: ${categories.length}, Items: ${items.length}, TopSelling: ${topSellingModel.items?.data?.length}");
+        print(
+            "Categories: ${categories.length}, Items: ${items.length}, TopSelling: ${topSellingModel.items?.data?.length}");
       }
 
       emit(FetchSuccessHomeDataState(
@@ -76,25 +77,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> fetchOffers(
-      FetchOffersEvent event, Emitter<HomeState> emit) async {
-    if (kDebugMode) {
-      print("FetchOffersEvent Started");
-    }
-    emit(FetchOffersLoadingState());
-    try {
-      final offersResponse = await HomeRepo.fetchOffers();
-      if (kDebugMode) {
-        print("FetchOffersEvent Succeeded with ${offersResponse.data?.length} offers");
-      }
-      emit(FetchOffersSuccessState(offers: offersResponse.data ?? []));
-    } catch (e) {
-      if (kDebugMode) {
-        print("FetchOffersEvent Failed: $e");
-      }
-      emit(FetchOffersErrorState(message: e.toString()));
-    }
+ Future<void> fetchOffers(
+    FetchOffersEvent event, Emitter<HomeState> emit) async {
+  if (kDebugMode) {
+    print("FetchOffersEvent Started");
   }
+  emit(FetchOffersLoadingState());
+  try {
+    final offers = await HomeRepo.fetchOffers();
+    if (kDebugMode) {
+      print("FetchOffersEvent Succeeded with ${offers.length} offers");
+    }
+    emit(FetchOffersSuccessState(offers: offers));
+  } catch (e) {
+    if (kDebugMode) {
+      print("FetchOffersEvent Failed: $e");
+    }
+    emit(FetchOffersErrorState(message: e.toString()));
+  }
+}
 
   Future<void> fetchTopSelling(
       FetchTopSellingEvent event, Emitter<HomeState> emit) async {
@@ -106,7 +107,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final topSellingResponse = await HomeRepo.fetchTopSelling();
       final topSellingItems = topSellingResponse.items?.data ?? [];
       if (kDebugMode) {
-        print("FetchTopSellingEvent Succeeded with ${topSellingItems.length} items");
+        print(
+            "FetchTopSellingEvent Succeeded with ${topSellingItems.length} items");
       }
       emit(FetchTopSellingSuccessState(topSelling: topSellingItems));
     } catch (e) {
@@ -126,7 +128,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final categories = await HomeRepo.fetchCategories();
       if (kDebugMode) {
-        print("FetchCategoriesEvent Succeeded with ${categories.length} categories");
+        print(
+            "FetchCategoriesEvent Succeeded with ${categories.length} categories");
       }
       emit(FetchCategoriesSuccessState(categories: categories));
     } catch (e) {
@@ -211,7 +214,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final services = searchResults.services?.data ?? [];
       final items = searchResults.items?.data ?? [];
       if (kDebugMode) {
-        print("FetchSearchEvent Succeeded with ${services.length} services and ${items.length} items");
+        print(
+            "FetchSearchEvent Succeeded with ${services.length} services and ${items.length} items");
       }
       emit(FetchSearchSuccessState(services: services, items: items));
     } catch (e) {

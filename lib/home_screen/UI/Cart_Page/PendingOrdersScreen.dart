@@ -66,7 +66,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
             btnOkOnPress: () {},
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             titleTextStyle:
-            MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: MyTheme.blackColor,
@@ -88,7 +88,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
             btnOkOnPress: () {},
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             titleTextStyle:
-            MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: MyTheme.blackColor,
@@ -227,7 +227,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                         Text(
                           'Check back later!',
                           style:
-                          MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                              MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
                             fontSize: 16.sp,
                             color: MyTheme.grayColor2,
                           ),
@@ -335,7 +335,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                     animType: AnimType.scale,
                     title: 'Delete Order',
                     desc:
-                    'Are you sure you want to delete this order permanently?',
+                        'Are you sure you want to delete this order permanently?',
                     btnCancelText: 'Cancel',
                     btnOkText: 'Delete',
                     btnCancelColor: MyTheme.grayColor2,
@@ -343,22 +343,22 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                     btnCancelOnPress: () {},
                     btnOkOnPress: () {
                       context.read<OrderBloc>().add(
-                        DeleteOrderEvent(
-                          orderId: order.ordersId ?? '',
-                          userId: widget.userId,
-                        ),
-                      );
+                            DeleteOrderEvent(
+                              orderId: order.ordersId ?? '',
+                              userId: widget.userId,
+                            ),
+                          );
                     },
                     padding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                     titleTextStyle:
-                    MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                        MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       color: MyTheme.blackColor,
                     ),
                     descTextStyle:
-                    MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                        MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                       fontSize: 14.sp,
                       color: MyTheme.grayColor2,
                     ),
@@ -366,7 +366,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                 },
                 child: Container(
                   padding:
-                  EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                   decoration: BoxDecoration(
                     color: MyTheme.redColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6.r),

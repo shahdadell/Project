@@ -11,7 +11,6 @@ import 'package:graduation_project/local_data/shared_preference.dart';
 import 'package:lottie/lottie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 class WishlistScreen extends StatelessWidget {
   static const String routeName = '/wishlist';
   const WishlistScreen({super.key});
