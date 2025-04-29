@@ -8,7 +8,7 @@ import 'package:graduation_project/home_screen/bloc/Home/home_bloc.dart';
 import 'package:graduation_project/home_screen/bloc/Home/home_event.dart';
 import 'package:graduation_project/home_screen/bloc/Home/home_state.dart';
 import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart'
-    as searchModel;
+as searchModel;
 import 'package:graduation_project/home_screen/UI/SearchFieldWidget/SearchResultCard.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -107,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (state is FetchSearchLoadingState) {
                   return Center(
                     child:
-                        CircularProgressIndicator(color: MyTheme.orangeColor),
+                    CircularProgressIndicator(color: MyTheme.orangeColor),
                   );
                 } else if (state is FetchSearchSuccessState) {
                   if (state.services.isEmpty && state.items.isEmpty) {
