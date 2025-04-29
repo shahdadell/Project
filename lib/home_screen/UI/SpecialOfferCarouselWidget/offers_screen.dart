@@ -19,352 +19,370 @@ class OffersScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              MyTheme.orangeColor.withOpacity(0.9),
-              Colors.redAccent.withOpacity(0.7),
-              Colors.white,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      backgroundColor: MyTheme.whiteColor,
+      appBar: AppBar(
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: Padding(
+            padding: EdgeInsets.all(12.w),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: MyTheme.whiteColor,
+              size: 24.w,
+            ),
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // AppBar مخصص
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: Row(
+        title: Text(
+          "Hot Deals 🔥",
+          style: MyTheme.lightTheme.textTheme.displayLarge?.copyWith(
+            fontSize: 20.sp, // تصغير حجم النص
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: MyTheme.grayColor3,
+                blurRadius: 3.r,
+                offset: Offset(1, 1),
+              ),
+            ],
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: MyTheme.orangeColor,
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20.r),
+          ),
+        ),
+      ),
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          if (state is FetchOffersLoadingState) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: MyTheme.orangeColor,
+                strokeWidth: 3.w, // تصغير عرض المؤشر
+              ),
+            );
+          } else if (state is FetchOffersErrorState) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 60.w, // تصغير الأيقونة
+                    color: MyTheme.orangeColor.withOpacity(0.7),
+                  ),
+                  SizedBox(height: 12.h), // تصغير المسافة
+                  Text(
+                    "Error loading offers: ${state.message}",
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: MyTheme.blackColor,
+                      fontSize: 14.sp, // تصغير حجم النص
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 12.h), // تصغير المسافة
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<HomeBloc>().add(FetchOffersEvent());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: MyTheme.orangeColor,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 8.h), // تصغير الـ padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(10.r), // تصغير الـ radius
+                      ),
+                    ),
+                    child: Text(
+                      "Try Again",
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: MyTheme.whiteColor,
+                        fontSize: 13.sp, // تصغير حجم النص
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else if (state is FetchOffersSuccessState) {
+            final offers = state.offers;
+            if (offers.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          color: MyTheme.whiteColor.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 6.r,
-                              offset: Offset(0, 2.h),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: MyTheme.orangeColor,
-                          size: 20.w,
-                        ),
+                    Icon(
+                      Icons.local_offer_outlined,
+                      size: 80.w, // تصغير الأيقونة
+                      color: MyTheme.orangeColor.withOpacity(0.7),
+                    ),
+                    SizedBox(height: 12.h), // تصغير المسافة
+                    Text(
+                      'No Offers Available Right Now',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: MyTheme.blackColor,
+                        fontSize: 16.sp, // تصغير حجم النص
                       ),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          "Hot Deals 🔥",
-                          style: textTheme.displayLarge?.copyWith(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.bold,
-                            color: MyTheme.whiteColor,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black45,
-                                blurRadius: 4.r,
-                                offset: Offset(2.w, 2.h),
-                              ),
-                            ],
-                          ),
-                        ),
+                    SizedBox(height: 6.h), // تصغير المسافة
+                    Text(
+                      'Check back soon for exciting deals! 🎉',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: MyTheme.grayColor2,
+                        fontSize: 13.sp, // تصغير حجم النص
                       ),
                     ),
-                    SizedBox(width: 40.w), // للتوزان
                   ],
                 ),
-              ),
-              Expanded(
-                child: BlocBuilder<HomeBloc, HomeState>(
-                  builder: (context, state) {
-                    if (state is FetchOffersLoadingState) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: MyTheme.whiteColor,
-                          strokeWidth: 4.w,
+              );
+            }
+            return ListView.builder(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 12.w, vertical: 12.h), // تصغير الـ padding
+              itemCount: offers.length,
+              itemBuilder: (context, index) {
+                final offer = offers[index];
+                final displayTitle = offer.title == null || offer.title!.isEmpty
+                    ? 'No Title'
+                    : offer.title!.length > 25
+                        ? '${offer.title!.substring(0, 25)}...'
+                        : offer.title!;
+                return AnimatedOpacity(
+                  opacity: 1.0,
+                  duration: Duration(milliseconds: 300 + (index * 100)),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        bottom: 16.h), // تصغير المسافة بين الكروت
+                    decoration: BoxDecoration(
+                      color: MyTheme.whiteColor,
+                      borderRadius:
+                          BorderRadius.circular(16.r), // تصغير الـ radius
+                      boxShadow: [
+                        BoxShadow(
+                          color: MyTheme.orangeColor.withOpacity(0.3),
+                          blurRadius: 10.r, // تصغير الـ blur
+                          spreadRadius: 2.r, // تصغير الـ spread
+                          offset: Offset(0, 3.h), // تصغير الـ offset
                         ),
-                      );
-                    } else if (state is FetchOffersErrorState) {
-                      return Center(
-                        child: Text(
-                          "Error loading offers: ${state.message}",
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: MyTheme.whiteColor,
-                            fontSize: 16.sp,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    } else if (state is FetchOffersSuccessState) {
-                      final offers = state.offers;
-                      if (offers.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.local_offer_outlined,
-                                size: 100.w,
-                                color: MyTheme.whiteColor.withOpacity(0.7),
-                              ),
-                              SizedBox(height: 16.h),
-                              Text(
-                                'No Offers Available Right Now',
-                                style: textTheme.titleLarge?.copyWith(
-                                  color: MyTheme.whiteColor,
-                                  fontSize: 18.sp,
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Check back soon for exciting deals! 🎉',
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: MyTheme.whiteColor.withOpacity(0.8),
-                                  fontSize: 14.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                        itemCount: offers.length,
-                        itemBuilder: (context, index) {
-                          final offer = offers[index];
-                          final displayTitle = offer.title == null || offer.title!.isEmpty
-                              ? 'No Title'
-                              : offer.title!.length > 25
-                                  ? '${offer.title!.substring(0, 25)}...'
-                                  : offer.title!;
-                          return Container(
-                            margin: EdgeInsets.only(bottom: 20.h),
-                            decoration: BoxDecoration(
-                              color: MyTheme.whiteColor,
-                              borderRadius: BorderRadius.circular(20.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.redAccent.withOpacity(0.3),
-                                  blurRadius: 12.r,
-                                  spreadRadius: 3.r,
-                                  offset: Offset(0, 4.h),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // الصورة مع badge
-                                Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                                      child: Image.network(
-                                        offer.image ?? '',
-                                        width: double.infinity,
-                                        height: 220.h,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (context, child, loadingProgress) {
-                                          if (loadingProgress == null) return child;
-                                          return Container(
-                                            width: double.infinity,
-                                            height: 220.h,
-                                            color: Colors.grey[200],
-                                            child: Center(
-                                              child: CircularProgressIndicator(
-                                                color: MyTheme.orangeColor,
-                                                strokeWidth: 3.w,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            width: double.infinity,
-                                            height: 220.h,
-                                            color: Colors.grey[200],
-                                            child: Icon(
-                                              Icons.broken_image,
-                                              size: 50.w,
-                                              color: Colors.grey[400],
-                                            ),
-                                          );
-                                        },
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // الصورة مع badge
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(16.r)),
+                              child: Image.network(
+                                offer.image ?? '',
+                                width: double.infinity,
+                                height: 180.h, // تصغير ارتفاع الصورة
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                    width: double.infinity,
+                                    height: 180.h,
+                                    color: MyTheme.grayColor2.withOpacity(0.1),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyTheme.orangeColor,
+                                        strokeWidth: 2.w, // تصغير عرض المؤشر
                                       ),
                                     ),
-                                    // Badge للخصم
-                                    // Positioned(
-                                    //   top: 16.h,
-                                    //   left: 16.w,
-                                    //   child: Container(
-                                    //     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                                    //     decoration: BoxDecoration(
-                                    //       color: Colors.redAccent,
-                                    //       borderRadius: BorderRadius.circular(20.r),
-                                    //       boxShadow: [
-                                    //         BoxShadow(
-                                    //           color: Colors.black26,
-                                    //           blurRadius: 4.r,
-                                    //           offset: Offset(0, 2.h),
-                                    //         ),
-                                    //       ],
-                                    //     ),
-                                    //     child: Text(
-                                    //       'Save ${index * 10 + 20}%!',
-                                    //       style: textTheme.bodyMedium?.copyWith(
-                                    //         color: MyTheme.whiteColor,
-                                    //         fontSize: 12.sp,
-                                    //         fontWeight: FontWeight.bold,
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    // عداد تنازلي وهمي
-                                    Positioned(
-                                      top: 16.h,
-                                      right: 16.w,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                                        decoration: BoxDecoration(
-                                          color: MyTheme.yellowColor,
-                                          borderRadius: BorderRadius.circular(20.r),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 4.r,
-                                              offset: Offset(0, 2.h),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.timer,
-                                              color: MyTheme.blackColor,
-                                              size: 16.w,
-                                            ),
-                                            SizedBox(width: 4.w),
-                                            Text(
-                                              'Ends in 2h 15m',
-                                              style: textTheme.bodyMedium?.copyWith(
-                                                color: MyTheme.blackColor,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: double.infinity,
+                                    height: 180.h,
+                                    color: MyTheme.grayColor2.withOpacity(0.1),
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: 40.w, // تصغير الأيقونة
+                                      color: MyTheme.grayColor2,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            // Badge للخصم
+                            Positioned(
+                              top: 12.h, // تصغير الموقع
+                              left: 12.w,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: 5.h), // تصغير الـ padding
+                                decoration: BoxDecoration(
+                                  color: MyTheme.orangeColor,
+                                  borderRadius: BorderRadius.circular(
+                                      16.r), // تصغير الـ radius
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: MyTheme.grayColor3,
+                                      blurRadius: 3.r, // تصغير الـ blur
+                                      offset:
+                                          Offset(0, 1.h), // تصغير الـ offset
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  'Save ${index * 10 + 20}%!',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: MyTheme.whiteColor,
+                                    fontSize: 11.sp, // تصغير حجم النص
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Timer badge
+                            Positioned(
+                              top: 12.h,
+                              right: 12.w,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: 5.h), // تصغير الـ padding
+                                decoration: BoxDecoration(
+                                  color: MyTheme.yellowColor,
+                                  borderRadius: BorderRadius.circular(
+                                      16.r), // تصغير الـ radius
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: MyTheme.grayColor3,
+                                      blurRadius: 3.r,
+                                      offset: Offset(0, 1.h),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.timer,
+                                      color: MyTheme.blackColor,
+                                      size: 14.w, // تصغير الأيقونة
+                                    ),
+                                    SizedBox(width: 3.w), // تصغير المسافة
+                                    Text(
+                                      'Ends in 2h 15m',
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: MyTheme.blackColor,
+                                        fontSize: 11.sp, // تصغير حجم النص
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.all(16.w),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // تفاصيل العرض
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              displayTitle,
-                                              style: textTheme.titleLarge?.copyWith(
-                                                fontSize: 20.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: MyTheme.blackColor,
-                                              ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(12.w), // تصغير الـ padding
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // تفاصيل العرض
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      displayTitle,
+                                      style: textTheme.titleLarge?.copyWith(
+                                        fontSize: 18.sp, // تصغير حجم النص
+                                        fontWeight: FontWeight.bold,
+                                        color: MyTheme.blackColor,
+                                      ),
+                                    ),
+                                    SizedBox(height: 6.h), // تصغير المسافة
+                                    if (offer.price != null)
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "${offer.price} EGP",
+                                            style:
+                                                textTheme.bodyLarge?.copyWith(
+                                              color: MyTheme.orangeColor,
+                                              fontSize: 16.sp, // تصغير حجم النص
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                            SizedBox(height: 8.h),
-                                            if (offer.price != null)
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    "${offer.price} EGP",
-                                                    style: textTheme.bodyLarge?.copyWith(
-                                                      color: MyTheme.orangeColor,
-                                                      fontSize: 18.sp,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 12.w),
-                                                  Text(
-                                                    "${(double.tryParse(offer.price.toString()) ?? 0.0) * 1.3}",
-                                                    style: textTheme.bodyMedium?.copyWith(
-                                                      color: MyTheme.grayColor2,
-                                                      fontSize: 14.sp,
-                                                      decoration: TextDecoration.lineThrough,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      // زرار إضافة للكارت (معلّق حاليًا)
-                                      /*
-                                      InkWell(
-                                        onTap: () {
-                                          if (userId == null) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(
-                                                content: Text('Please log in to add to cart'),
-                                              ),
-                                            );
-                                          } else {
-                                            context.read<CartBloc>().add(AddToCartEvent(
-                                              productId: offer.id?.toString() ?? '0',
-                                              quantity: 1,
-                                            ));
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('$displayTitle added to cart'),
-                                                backgroundColor: MyTheme.orangeColor,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(8.w),
-                                          decoration: BoxDecoration(
-                                            color: MyTheme.orangeColor.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(12.r),
                                           ),
-                                          child: Icon(
-                                            Icons.add_shopping_cart,
-                                            color: MyTheme.orangeColor,
-                                            size: 28.w,
+                                          SizedBox(
+                                              width: 10.w), // تصغير المسافة
+                                          Text(
+                                            "${(double.tryParse(offer.price.toString()) ?? 0.0) * 1.3}",
+                                            style:
+                                                textTheme.bodyMedium?.copyWith(
+                                              color: MyTheme.grayColor2,
+                                              fontSize: 13.sp, // تصغير حجم النص
+                                              decoration:
+                                                  TextDecoration.lineThrough,
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                      */
-                                    ],
+                                  ],
+                                ),
+                              ),
+                              // زر إضافة للكارت (معلّق حاليًا)
+                              /*
+                              InkWell(
+                                onTap: () {
+                                  if (userId == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Please log in to add to cart'),
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<CartBloc>().add(AddToCartEvent(
+                                      productId: offer.id?.toString() ?? '0',
+                                      quantity: 1,
+                                    ));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('$displayTitle added to cart'),
+                                        backgroundColor: MyTheme.orangeColor,
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(6.w), // تصغير الـ padding
+                                  decoration: BoxDecoration(
+                                    color: MyTheme.orangeColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10.r), // تصغير الـ radius
+                                  ),
+                                  child: Icon(
+                                    Icons.add_shopping_cart,
+                                    color: MyTheme.orangeColor,
+                                    size: 24.w, // تصغير الأيقونة
                                   ),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+                              ),
+                              */
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

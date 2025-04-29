@@ -21,21 +21,26 @@ class ItemsAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: Text(
         "Items",
-        style: TextStyle(fontSize: 20.sp, color: MyTheme.whiteColor),
+        style: MyTheme.lightTheme.textTheme.displayLarge?.copyWith(
+          fontSize: 22.sp,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              color: MyTheme.grayColor3,
+              blurRadius: 3.r,
+              offset: Offset(1, 1),
+            ),
+          ],
+        ),
       ),
-      backgroundColor: MyTheme.orangeColor,
       centerTitle: true,
-      // elevation: 4,
-      // shadowColor: Colors.black.withOpacity(0.3),
-      // flexibleSpace: Container(
-      //   decoration: BoxDecoration(
-      //     gradient: LinearGradient(
-      //       colors: [MyTheme.orangeColor, Colors.orange[400]!],
-      //       begin: Alignment.topLeft,
-      //       end: Alignment.bottomRight,
-      //     ),
-      //   ),
-      // ),
+      backgroundColor: MyTheme.orangeColor,
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(20.r),
+        ),
+      ),
     );
   }
 

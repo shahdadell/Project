@@ -1,27 +1,37 @@
 import 'datacart.dart';
 
-/// status : "success"
-/// rest_cafe : {"countprice":{"totalprice":"0","totalcount":"0"},"datacart":[]}
-/// hotel_tourist : {"countprice":{"totalprice":"0","totalcount":"0"},"datacart":[]}
-
 class CartViewResponse {
   CartViewResponse({
     this.status,
     this.restCafe,
     this.hotelTourist,
+    this.otherCategories,
+    this.offers,
   });
 
   CartViewResponse.fromJson(dynamic json) {
     status = json['status'];
-    restCafe =
-        json['rest_cafe'] != null ? RestCafe.fromJson(json['rest_cafe']) : null;
-    hotelTourist = json['hotel_tourist'] != null
-        ? HotelTourist.fromJson(json['hotel_tourist'])
-        : null;
+    restCafe = json['rest_cafe'] != null ? RestCafe.fromJson(json['rest_cafe']) : null;
+    hotelTourist = json['hotel_tourist'] != null ? HotelTourist.fromJson(json['hotel_tourist']) : null;
+    if (json['other_categories'] != null) {
+      otherCategories = [];
+      json['other_categories'].forEach((v) {
+        otherCategories?.add(v);
+      });
+    }
+    if (json['offers'] != null) {
+      offers = [];
+      json['offers'].forEach((v) {
+        offers?.add(Datacart.fromJson(v));
+      });
+    }
   }
+
   String? status;
   RestCafe? restCafe;
   HotelTourist? hotelTourist;
+  List<dynamic>? otherCategories;
+  List<Datacart>? offers;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -32,12 +42,15 @@ class CartViewResponse {
     if (hotelTourist != null) {
       map['hotel_tourist'] = hotelTourist?.toJson();
     }
+    if (otherCategories != null) {
+      map['other_categories'] = otherCategories;
+    }
+    if (offers != null) {
+      map['offers'] = offers?.map((v) => v.toJson()).toList();
+    }
     return map;
   }
 }
-
-/// countprice : {"totalprice":"0","totalcount":"0"}
-/// datacart : []
 
 class HotelTourist {
   HotelTourist({
@@ -46,9 +59,7 @@ class HotelTourist {
   });
 
   HotelTourist.fromJson(dynamic json) {
-    countprice = json['countprice'] != null
-        ? Countprice.fromJson(json['countprice'])
-        : null;
+    countprice = json['countprice'] != null ? Countprice.fromJson(json['countprice']) : null;
     if (json['datacart'] != null) {
       datacart = [];
       json['datacart'].forEach((v) {
@@ -56,6 +67,7 @@ class HotelTourist {
       });
     }
   }
+
   Countprice? countprice;
   List<Datacart>? datacart;
 
@@ -71,9 +83,6 @@ class HotelTourist {
   }
 }
 
-/// totalprice : "0"
-/// totalcount : "0"
-
 class Countprice {
   Countprice({
     this.totalprice,
@@ -84,6 +93,7 @@ class Countprice {
     totalprice = json['totalprice'];
     totalcount = json['totalcount'];
   }
+
   String? totalprice;
   String? totalcount;
 
@@ -95,9 +105,6 @@ class Countprice {
   }
 }
 
-/// countprice : {"totalprice":"0","totalcount":"0"}
-/// datacart : []
-
 class RestCafe {
   RestCafe({
     this.countprice,
@@ -105,9 +112,7 @@ class RestCafe {
   });
 
   RestCafe.fromJson(dynamic json) {
-    countprice = json['countprice'] != null
-        ? Countprice.fromJson(json['countprice'])
-        : null;
+    countprice = json['countprice'] != null ? Countprice.fromJson(json['countprice']) : null;
     if (json['datacart'] != null) {
       datacart = [];
       json['datacart'].forEach((v) {
@@ -115,6 +120,7 @@ class RestCafe {
       });
     }
   }
+
   Countprice? countprice;
   List<Datacart>? datacart;
 

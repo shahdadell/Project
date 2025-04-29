@@ -141,12 +141,14 @@ class CartRepo {
   static Future<CartDeleteResponse> deleteCartItem({
     required int userId,
     required int itemId,
+    required String type, // إضافة حقل type
   }) async {
     try {
       const String endpoint = AppEndpoints.cartDelete;
       final FormData formData = FormData.fromMap({
         'usersid': userId.toString(),
         'itemsid': itemId.toString(),
+        'type': type, // إضافة type في الـ FormData
       });
       log('Delete Cart Item Request: $formData');
       final response = await DioProvider.post(
