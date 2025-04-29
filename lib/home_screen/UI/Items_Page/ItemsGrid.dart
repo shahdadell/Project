@@ -55,7 +55,7 @@ class ItemsGrid extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 15.w,
               mainAxisSpacing: 15.h,
-              childAspectRatio: 0.65,
+              childAspectRatio: 0.75, // تعديل النسبة لتناسب الصور المتوسطة
             ),
             itemCount: homeState.items.length,
             itemBuilder: (context, index) {
@@ -68,9 +68,9 @@ class ItemsGrid extends StatelessWidget {
 
               // تحقق من حالة العنصر في المفضلة عند التحميل
               context.read<FavoriteBloc>().add(CheckFavoriteStatusEvent(
-                    userId: userId ?? 0,
-                    itemId: itemId,
-                  ));
+                userId: userId ?? 0,
+                itemId: itemId,
+              ));
 
               return BlocBuilder<FavoriteBloc, FavoriteState>(
                 builder: (context, favoriteState) {
@@ -110,45 +110,46 @@ class ItemsGrid extends StatelessWidget {
                                 ClipRRect(
                                   borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(15.r)),
-                                  child: item.itemsImage != null &&
-                                          item.itemsImage!.isNotEmpty
-                                      ? Image.network(
-                                          item.itemsImage!,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder: (context, child,
-                                              loadingProgress) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return Container(
-                                              color: Colors.grey[200],
-                                              child: Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: MyTheme.orangeColor,
-                                                  strokeWidth: 2.w,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                            return Container(
-                                              color: Colors.grey[200],
-                                              child: Icon(Icons.broken_image,
-                                                  size: 50.w,
-                                                  color: Colors.grey[400]),
-                                            );
-                                          },
-                                        )
-                                      : Container(
-                                          width: double.infinity,
+                                  child: SizedBox(
+                                    height: 150.h, // ارتفاع ثابت للصور
+                                    width: double.infinity,
+                                    child: item.itemsImage != null &&
+                                        item.itemsImage!.isNotEmpty
+                                        ? Image.network(
+                                      item.itemsImage!,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder: (context, child,
+                                          loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Container(
+                                          color: Colors.grey[200],
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              color: MyTheme.orangeColor,
+                                              strokeWidth: 2.w,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Container(
                                           color: Colors.grey[200],
                                           child: Icon(Icons.broken_image,
                                               size: 50.w,
                                               color: Colors.grey[400]),
-                                        ),
+                                        );
+                                      },
+                                    )
+                                        : Container(
+                                      color: Colors.grey[200],
+                                      child: Icon(Icons.broken_image,
+                                          size: 50.w,
+                                          color: Colors.grey[400]),
+                                    ),
+                                  ),
                                 ),
                                 if (item.itemsDiscount != null &&
                                     item.itemsDiscount! > 0)
@@ -168,7 +169,7 @@ class ItemsGrid extends StatelessWidget {
                                           end: Alignment.bottomRight,
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.r),
+                                        BorderRadius.circular(10.r),
                                       ),
                                       child: Text(
                                         '-${item.itemsDiscount?.toStringAsFixed(0)}%',
@@ -211,7 +212,7 @@ class ItemsGrid extends StatelessWidget {
                                 SizedBox(height: 8.h),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Container(
@@ -220,7 +221,7 @@ class ItemsGrid extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           color: Colors.green[100],
                                           borderRadius:
-                                              BorderRadius.circular(8.r),
+                                          BorderRadius.circular(8.r),
                                         ),
                                         child: Text(
                                           '${item.itemsPrice?.toStringAsFixed(2) ?? 'N/A'} EGP',
@@ -249,26 +250,26 @@ class ItemsGrid extends StatelessWidget {
                                                         fontSize: 13.sp),
                                                   ),
                                                   backgroundColor:
-                                                      Colors.black87,
+                                                  Colors.black87,
                                                   behavior:
-                                                      SnackBarBehavior.floating,
+                                                  SnackBarBehavior.floating,
                                                   shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.r)),
+                                                      BorderRadius.circular(
+                                                          10.r)),
                                                   duration:
-                                                      Duration(seconds: 2),
+                                                  Duration(seconds: 2),
                                                 ),
                                               );
                                               return;
                                             }
                                             if (isFavorite) {
                                               context.read<FavoriteBloc>().add(
-                                                    DeleteFavoriteItemEvent(
-                                                      userId: userId,
-                                                      itemId: itemId,
-                                                    ),
-                                                  );
+                                                DeleteFavoriteItemEvent(
+                                                  userId: userId,
+                                                  itemId: itemId,
+                                                ),
+                                              );
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 SnackBar(
@@ -278,24 +279,24 @@ class ItemsGrid extends StatelessWidget {
                                                         fontSize: 13.sp),
                                                   ),
                                                   backgroundColor:
-                                                      Colors.black87,
+                                                  Colors.black87,
                                                   behavior:
-                                                      SnackBarBehavior.floating,
+                                                  SnackBarBehavior.floating,
                                                   shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.r)),
+                                                      BorderRadius.circular(
+                                                          10.r)),
                                                   duration:
-                                                      Duration(seconds: 1),
+                                                  Duration(seconds: 1),
                                                 ),
                                               );
                                             } else {
                                               context.read<FavoriteBloc>().add(
-                                                    AddToFavoriteEvent(
-                                                      userId: userId,
-                                                      itemId: itemId,
-                                                    ),
-                                                  );
+                                                AddToFavoriteEvent(
+                                                  userId: userId,
+                                                  itemId: itemId,
+                                                ),
+                                              );
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 SnackBar(
@@ -305,15 +306,15 @@ class ItemsGrid extends StatelessWidget {
                                                         fontSize: 13.sp),
                                                   ),
                                                   backgroundColor:
-                                                      Colors.black87,
+                                                  Colors.black87,
                                                   behavior:
-                                                      SnackBarBehavior.floating,
+                                                  SnackBarBehavior.floating,
                                                   shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.r)),
+                                                      BorderRadius.circular(
+                                                          10.r)),
                                                   duration:
-                                                      Duration(seconds: 1),
+                                                  Duration(seconds: 1),
                                                 ),
                                               );
                                             }
