@@ -33,7 +33,7 @@ class OffersScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Hot Deals 🔥",
+          "Special Offers",
           style: MyTheme.lightTheme.textTheme.displayLarge?.copyWith(
             fontSize: 20.sp, // تصغير حجم النص
             fontWeight: FontWeight.bold,

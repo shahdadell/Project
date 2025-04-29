@@ -30,7 +30,7 @@ class _SpecialOfferCarouselWidgetState
         Padding(
           padding: EdgeInsets.only(left: 15.w),
           child: Text(
-            "Special Offer",
+            "Special Offers",
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
