@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:graduation_project/API_Services/endpoints.dart';
+import 'package:graduation_project/auth/sing_in_screen/sign_in_screen.dart';
 import 'package:graduation_project/local_data/shared_preference.dart';
+import 'package:graduation_project/main.dart'; // استيراد navigatorKey من main.dart
 
 class DioProvider {
   static late Dio _dio;
+  static bool _isRedirecting = false; // لمنع التكرار في التوجيه
 
   static Future<void> init() async {
     await AppLocalStorage.init();
@@ -46,7 +50,6 @@ class DioProvider {
         } catch (e) {
           print('Failed to parse response as JSON: $e');
           print('Response (before parsing): $responseData');
-          // محاولة إصلاح JSON غير صحيح
           if (responseData.contains('}{')) {
             final parts = responseData.split('}{');
             responseData = '{${parts.last}';
@@ -64,11 +67,46 @@ class DioProvider {
 
         return handler.next(response);
       },
-      onError: (DioException e, handler) {
+      onError: (DioException e, handler) async {
         print('Error [${e.type}] on request to: ${e.requestOptions.uri}');
         print('Error Message: ${e.message}');
         print('Error Response: ${e.response?.data}');
         print('Error Details: ${e.error}');
+
+        // التعامل مع الـ 401 Unauthorized
+        if (e.response?.statusCode == 401 && !_isRedirecting) {
+          _isRedirecting = true; // لمنع التكرار
+          print('Unauthorized access detected, redirecting to SignInScreen...');
+
+          // إزالة الـ token القديم
+          await AppLocalStorage.removeData('token');
+          print('Old token removed from AppLocalStorage');
+
+          // عرض SnackBar
+          if (navigatorKey.currentContext != null) {
+            ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+              const SnackBar(
+                content: Text('Session expired. Please log in again.'),
+                backgroundColor: Colors.redAccent,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+
+          // التوجيه لصفحة تسجيل الدخول باستخدام navigatorKey
+          Future.delayed(const Duration(seconds: 2), () {
+            navigatorKey.currentState?.pushNamedAndRemoveUntil(
+              SignInScreen.routName,
+              (route) => false,
+            );
+          });
+
+          // إعادة تعيين المتغير بعد التوجيه
+          Future.delayed(const Duration(seconds: 3), () {
+            _isRedirecting = false;
+          });
+        }
+
         return handler.next(e);
       },
     ));

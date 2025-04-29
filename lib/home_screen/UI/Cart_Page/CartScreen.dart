@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +12,6 @@ import 'package:graduation_project/Theme/theme.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_bloc.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_event.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_state.dart';
-import 'package:graduation_project/home_screen/data/repo/cart_repo.dart';
 import 'package:graduation_project/local_data/shared_preference.dart';
 import 'package:lottie/lottie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -47,6 +47,16 @@ class _CartScreenState extends State<CartScreen> {
     final int? userId = AppLocalStorage.getData('user_id');
     if (userId != null) {
       context.read<AddressBloc>().add(FetchAddressesEvent());
+      context.read<CartBloc>().add(FetchCartEvent(userId: userId));
+    }
+  }
+
+  @override
+  void didUpdateWidget(CartScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final int? userId = AppLocalStorage.getData('user_id');
+    if (userId != null) {
+      context.read<CartBloc>().add(FetchCartEvent(userId: userId));
     }
   }
 
@@ -54,6 +64,13 @@ class _CartScreenState extends State<CartScreen> {
   void dispose() {
     _couponController.dispose();
     super.dispose();
+  }
+
+  Future<void> _refreshCart(BuildContext context) async {
+    final int? userId = AppLocalStorage.getData('user_id');
+    if (userId != null) {
+      context.read<CartBloc>().add(FetchCartEvent(userId: userId));
+    }
   }
 
   void _showErrorDialog(String message) {
@@ -125,7 +142,7 @@ class _CartScreenState extends State<CartScreen> {
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     padding:
-                    EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
+                        EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
                     elevation: 5,
                     shadowColor: MyTheme.orangeColor.withOpacity(0.4),
                   ),
@@ -146,19 +163,6 @@ class _CartScreenState extends State<CartScreen> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) {
-            final bloc = CartBloc(cartRepo: CartRepo());
-            final cachedCart = AppLocalStorage.getCachedCart();
-            if (cachedCart != null) {
-              bloc.emit(FetchCartSuccessState(
-                cartViewResponse: CartViewResponse.fromJson(cachedCart),
-              ));
-            }
-            bloc.add(FetchCartEvent(userId: userId));
-            return bloc;
-          },
-        ),
         BlocProvider(
           create: (context) => OrderBloc(orderRepo: OrderRepo()),
         ),
@@ -250,7 +254,7 @@ class _CartScreenState extends State<CartScreen> {
               couponId =
                   int.tryParse(state.couponResponse.data?.couponId ?? '0');
               couponDiscount = double.tryParse(
-                  state.couponResponse.data?.couponDiscount ?? '0.0') ??
+                      state.couponResponse.data?.couponDiscount ?? '0.0') ??
                   0.0;
               isCouponApplied = true;
             });
@@ -388,59 +392,96 @@ class _CartScreenState extends State<CartScreen> {
                       final restCafeItems = cart.restCafe?.datacart ?? [];
                       final hotelTouristItems =
                           cart.hotelTourist?.datacart ?? [];
-                      final allItems = [...restCafeItems, ...hotelTouristItems];
+                      final offerItems = cart.offers ?? [];
+                      final allItems = [
+                        ...restCafeItems,
+                        ...hotelTouristItems,
+                        ...offerItems
+                      ];
                       if (allItems.isNotEmpty) {
-                        return _buildCartList(context, allItems, userId, cart);
+                        return RefreshIndicator(
+                          onRefresh: () => _refreshCart(context),
+                          color: MyTheme.orangeColor,
+                          child:
+                              _buildCartList(context, allItems, userId, cart),
+                        );
                       }
-                      return _buildEmptyCart(context);
+                      return RefreshIndicator(
+                        onRefresh: () => _refreshCart(context),
+                        color: MyTheme.orangeColor,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: _buildEmptyCart(context),
+                        ),
+                      );
                     }
-                    return _buildEmptyCart(context);
+                    return RefreshIndicator(
+                      onRefresh: () => _refreshCart(context),
+                      color: MyTheme.orangeColor,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: _buildEmptyCart(context),
+                      ),
+                    );
                   } else if (state is FetchCartErrorState) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_rounded,
-                            size: 80.w,
-                            color: MyTheme.redColor.withOpacity(0.7),
-                          ),
-                          SizedBox(height: 20.h),
-                          Text(
-                            'Error: ${state.message}',
-                            style: MyTheme.lightTheme.textTheme.titleMedium
-                                ?.copyWith(
-                              fontSize: 18.sp,
-                              color: MyTheme.redColor,
+                    return RefreshIndicator(
+                      onRefresh: () => _refreshCart(context),
+                      color: MyTheme.orangeColor,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 200.h,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_rounded,
+                                  size: 80.w,
+                                  color: MyTheme.redColor.withOpacity(0.7),
+                                ),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  'Error: ${state.message}',
+                                  style: MyTheme
+                                      .lightTheme.textTheme.titleMedium
+                                      ?.copyWith(
+                                    fontSize: 18.sp,
+                                    color: MyTheme.redColor,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 20.h),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    context
+                                        .read<CartBloc>()
+                                        .add(FetchCartEvent(userId: userId));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: MyTheme.orangeColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 30.w, vertical: 12.h),
+                                    elevation: 5,
+                                    shadowColor:
+                                        MyTheme.orangeColor.withOpacity(0.4),
+                                  ),
+                                  child: Text(
+                                    'Retry',
+                                    style: MyTheme
+                                        .lightTheme.textTheme.displayMedium
+                                        ?.copyWith(
+                                      fontSize: 16.sp,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: 20.h),
-                          ElevatedButton(
-                            onPressed: () {
-                              context
-                                  .read<CartBloc>()
-                                  .add(FetchCartEvent(userId: userId));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: MyTheme.orangeColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30.w, vertical: 12.h),
-                              elevation: 5,
-                              shadowColor: MyTheme.orangeColor.withOpacity(0.4),
-                            ),
-                            child: Text(
-                              'Retry',
-                              style: MyTheme.lightTheme.textTheme.displayMedium
-                                  ?.copyWith(
-                                fontSize: 16.sp,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     );
                   }
@@ -456,7 +497,7 @@ class _CartScreenState extends State<CartScreen> {
                         Text(
                           'Loading your cart...',
                           style:
-                          MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                              MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
                             fontSize: 18.sp,
                             color: MyTheme.mauveColor,
                           ),
@@ -502,7 +543,6 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildCartList(BuildContext context, List<Datacart> dataCart,
       int userId, CartViewResponse cart) {
-    List<Datacart> localCartItems = List.from(dataCart);
     double totalPrice = calculateTotalPrice(cart);
     double discountedPrice = totalPrice - (totalPrice * (couponDiscount / 100));
 
@@ -512,36 +552,31 @@ class _CartScreenState extends State<CartScreen> {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 10.w), // رجّعنا الـ padding
-            itemCount: localCartItems.length,
+            padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 10.w),
+            itemCount: dataCart.length,
             itemBuilder: (context, index) {
-              final item = localCartItems[index];
+              final item = dataCart[index];
+              final String type = item.cartType == 'offer' ? 'offer' : 'item';
+
               return BlocConsumer<CartBloc, CartState>(
                 listener: (context, state) {
                   if (state is DeleteCartItemSuccessState) {
-                    setState(() {
-                      localCartItems.removeAt(index);
-                      totalPrice = calculateTotalPrice(cart);
-                      discountedPrice =
-                          totalPrice - (totalPrice * (couponDiscount / 100));
-                    });
-                    context
-                        .read<CartBloc>()
-                        .add(FetchCartEvent(userId: userId));
+                    // مفيش حاجة محتاجة تتعمل هنا لأن FetchCartEvent هيحدث الـ state
                   }
                 },
                 builder: (context, state) {
                   bool isLoading = state is DeleteCartItemLoadingState ||
                       state is AddToCartLoadingState;
                   double itemPrice =
-                      double.tryParse(item.itemsPrice ?? '0.0') ?? 0.0;
+                      double.tryParse(item.price ?? item.itemsPrice ?? '0.0') ??
+                          0.0;
                   int itemQuantity =
                       int.tryParse(item.cartQuantity ?? '0') ?? 0;
                   double totalItemPrice = itemPrice * itemQuantity;
 
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 6.h), // رجّعنا الـ margin
-                    padding: EdgeInsets.all(10.w), // رجّعنا الـ padding
+                    margin: EdgeInsets.symmetric(vertical: 6.h),
+                    padding: EdgeInsets.all(10.w),
                     decoration: BoxDecoration(
                       color: MyTheme.whiteColor,
                       borderRadius: BorderRadius.circular(12.r),
@@ -562,73 +597,73 @@ class _CartScreenState extends State<CartScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.r),
-                          child: item.itemsImage != null
+                          child: item.image != null || item.itemsImage != null
                               ? CachedNetworkImage(
-                            imageUrl: item.itemsImage!,
-                            width: 70.w,
-                            height: 60.h,
-                            fit: BoxFit.cover,
-                            memCacheHeight: (60.h).toInt(),
-                            memCacheWidth: (60.w).toInt(),
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(
-                                color: MyTheme.orangeColor,
-                                strokeWidth: 2.w,
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Icon(
-                              Icons.fastfood_rounded,
-                              size: 24.w,
-                              color: MyTheme.orangeColor,
-                            ),
-                          )
+                                  imageUrl: item.image ?? item.itemsImage!,
+                                  width: 70.w,
+                                  height: 60.h,
+                                  fit: BoxFit.cover,
+                                  memCacheHeight: (60.h).toInt(),
+                                  memCacheWidth: (60.w).toInt(),
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(
+                                      color: MyTheme.orangeColor,
+                                      strokeWidth: 2.w,
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) => Icon(
+                                    Icons.fastfood_rounded,
+                                    size: 24.w,
+                                    color: MyTheme.orangeColor,
+                                  ),
+                                )
                               : Icon(
-                            Icons.fastfood_rounded,
-                            size: 24.w,
-                            color: MyTheme.orangeColor,
-                          ),
+                                  Icons.fastfood_rounded,
+                                  size: 24.w,
+                                  color: MyTheme.orangeColor,
+                                ),
                         ),
-                        SizedBox(width: 12.w), // رجّعنا المسافة
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.itemsName ?? 'No Name',
+                                item.name ?? item.itemsName ?? 'No Name',
                                 style: MyTheme.lightTheme.textTheme.titleSmall
                                     ?.copyWith(
-                                  fontSize: 14.sp, // رجّعنا حجم النص
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
                                   color: MyTheme.mauveColor,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              SizedBox(height: 6.h), // رجّعنا المسافة
+                              SizedBox(height: 6.h),
                               Text(
                                 '${itemPrice.toStringAsFixed(2)} EGP',
                                 style: MyTheme.lightTheme.textTheme.titleSmall
                                     ?.copyWith(
-                                  fontSize: 12.sp, // رجّعنا حجم النص
+                                  fontSize: 12.sp,
                                   color: MyTheme.greenColor,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(height: 4.h), // رجّعنا المسافة
+                              SizedBox(height: 4.h),
                               Text(
                                 'Qty: $itemQuantity',
                                 style: MyTheme.lightTheme.textTheme.bodySmall
                                     ?.copyWith(
-                                  fontSize: 12.sp, // رجّعنا حجم النص
+                                  fontSize: 12.sp,
                                   color: MyTheme.grayColor2,
                                 ),
                               ),
-                              SizedBox(height: 4.h), // رجّعنا المسافة
+                              SizedBox(height: 4.h),
                               Text(
                                 'Total: ${totalItemPrice.toStringAsFixed(2)} EGP',
                                 style: MyTheme.lightTheme.textTheme.titleSmall
                                     ?.copyWith(
-                                  fontSize: 12.sp, // رجّعنا حجم النص
+                                  fontSize: 12.sp,
                                   color: MyTheme.greenColor,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -636,7 +671,7 @@ class _CartScreenState extends State<CartScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(width: 8.w), // رجّعنا المسافة
+                        SizedBox(width: 8.w),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
@@ -646,21 +681,23 @@ class _CartScreenState extends State<CartScreen> {
                                 onTap: () {
                                   if (item.cartItemsid != null &&
                                       (int.tryParse(item.cartQuantity ?? '0') ??
-                                          0) >
+                                              0) >
                                           1) {
                                     context
                                         .read<CartBloc>()
                                         .add(DeleteCartItemEvent(
-                                      userId: userId,
-                                      itemId: int.parse(item.cartItemsid!),
-                                    ));
+                                          userId: userId,
+                                          itemId: int.parse(item.cartItemsid!),
+                                          type: type,
+                                        ));
                                   } else if (item.cartItemsid != null) {
                                     context
                                         .read<CartBloc>()
                                         .add(DeleteCartItemEvent(
-                                      userId: userId,
-                                      itemId: int.parse(item.cartItemsid!),
-                                    ));
+                                          userId: userId,
+                                          itemId: int.parse(item.cartItemsid!),
+                                          type: type,
+                                        ));
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
@@ -673,37 +710,37 @@ class _CartScreenState extends State<CartScreen> {
                                   }
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(5.w), // رجّعنا الـ padding
+                                  padding: EdgeInsets.all(4.w),
                                   decoration: BoxDecoration(
                                     color: MyTheme.orangeColor.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(6.r),
                                   ),
                                   child: Icon(
                                     Icons.remove_rounded,
-                                    size: 18.w, // رجّعنا حجم الأيقونة
+                                    size: 18.w,
                                     color: MyTheme.orangeColor,
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 8.w), // رجّعنا المسافة
+                              SizedBox(width: 4.w),
                               Text(
                                 item.cartQuantity ?? '0',
                                 style: MyTheme.lightTheme.textTheme.bodySmall
                                     ?.copyWith(
-                                  fontSize: 14.sp, // رجّعنا حجم النص
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
                                   color: MyTheme.mauveColor,
                                 ),
                               ),
-                              SizedBox(width: 8.w), // رجّعنا المسافة
+                              SizedBox(width: 4.w),
                               GestureDetector(
                                 onTap: () {
                                   if (item.cartItemsid != null) {
                                     context.read<CartBloc>().add(AddToCartEvent(
-                                      userId: userId,
-                                      itemId: int.parse(item.cartItemsid!),
-                                      quantity: 1,
-                                    ));
+                                          userId: userId,
+                                          itemId: int.parse(item.cartItemsid!),
+                                          quantity: 1,
+                                        ));
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
@@ -716,63 +753,64 @@ class _CartScreenState extends State<CartScreen> {
                                   }
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(5.w), // رجّعنا الـ padding
+                                  padding: EdgeInsets.all(4.w),
                                   decoration: BoxDecoration(
                                     color: MyTheme.orangeColor.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(6.r),
                                   ),
                                   child: Icon(
                                     Icons.add_rounded,
-                                    size: 18.w, // رجّعنا حجم الأيقونة
+                                    size: 18.w,
                                     color: MyTheme.orangeColor,
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 8.w), // رجّعنا المسافة
+                              SizedBox(width: 4.w),
                               GestureDetector(
                                 onTap: isLoading
                                     ? null
                                     : () {
-                                  if (item.cartItemsid != null) {
-                                    context
-                                        .read<CartBloc>()
-                                        .add(DeleteCartItemEvent(
-                                      userId: userId,
-                                      itemId: int.parse(
-                                          item.cartItemsid!),
-                                    ));
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'Cannot remove item: Missing item ID'),
-                                        backgroundColor: Colors.redAccent,
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                  }
-                                },
+                                        if (item.cartItemsid != null) {
+                                          context
+                                              .read<CartBloc>()
+                                              .add(DeleteCartItemEvent(
+                                                userId: userId,
+                                                itemId: int.parse(
+                                                    item.cartItemsid!),
+                                                type: type,
+                                              ));
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Cannot remove item: Missing item ID'),
+                                              backgroundColor: Colors.redAccent,
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                        }
+                                      },
                                 child: Container(
-                                  padding: EdgeInsets.all(5.w), // رجّعنا الـ padding
+                                  padding: EdgeInsets.all(4.w),
                                   decoration: BoxDecoration(
                                     color: MyTheme.redColor.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(6.r),
                                   ),
                                   child: isLoading
                                       ? SizedBox(
-                                    width: 18.w, // رجّعنا حجم الـ indicator
-                                    height: 18.w,
-                                    child: CircularProgressIndicator(
-                                      color: MyTheme.redColor,
-                                      strokeWidth: 2.w,
-                                    ),
-                                  )
+                                          width: 16.w,
+                                          height: 16.w,
+                                          child: CircularProgressIndicator(
+                                            color: MyTheme.redColor,
+                                            strokeWidth: 2.w,
+                                          ),
+                                        )
                                       : Icon(
-                                    Icons.delete_rounded,
-                                    size: 18.w, // رجّعنا حجم الأيقونة
-                                    color: MyTheme.redColor,
-                                  ),
+                                          Icons.delete_rounded,
+                                          size: 18.w,
+                                          color: MyTheme.orangeColor,
+                                        ),
                                 ),
                               ),
                             ],
@@ -839,7 +877,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 Container(
                   padding:
-                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                   decoration: BoxDecoration(
                     color: MyTheme.orangeColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(10.r),
@@ -854,9 +892,9 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       SizedBox(width: 6.w),
                       Text(
-                        '${localCartItems.length} Item${localCartItems.length != 1 ? 's' : ''}',
+                        '${dataCart.length} Item${dataCart.length != 1 ? 's' : ''}',
                         style:
-                        MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                            MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                           color: MyTheme.orangeColor,
@@ -975,7 +1013,7 @@ class _CartScreenState extends State<CartScreen> {
                         child: Text(
                           'Error loading addresses: ${addressState.message}',
                           style:
-                          MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                              MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                             fontSize: 12.sp,
                             color: MyTheme.redColor,
                           ),
@@ -1115,9 +1153,9 @@ class _CartScreenState extends State<CartScreen> {
                       onPressed: () {
                         if (_couponController.text.isNotEmpty) {
                           context.read<CartBloc>().add(
-                            CheckCouponEvent(
-                                couponName: _couponController.text),
-                          );
+                                CheckCouponEvent(
+                                    couponName: _couponController.text),
+                              );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -1169,7 +1207,7 @@ class _CartScreenState extends State<CartScreen> {
                         Text(
                           'Coupon Applied: ${couponDiscount}% off',
                           style:
-                          MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                              MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                             fontSize: 12.sp,
                             color: MyTheme.greenColor,
                           ),
@@ -1208,28 +1246,28 @@ class _CartScreenState extends State<CartScreen> {
                   onPressed: isLoading
                       ? null
                       : () {
-                    if (selectedAddressId == null) {
-                      _showErrorDialog(
-                          'Please select a delivery address.');
-                      return;
-                    }
-                    int orderstype = 1;
-                    double priceDelivery = 10.0;
-                    double ordersPrice = calculateTotalPrice(cart);
-                    double finalPrice = ordersPrice -
-                        (ordersPrice * (couponDiscount / 100));
+                          if (selectedAddressId == null) {
+                            _showErrorDialog(
+                                'Please select a delivery address.');
+                            return;
+                          }
+                          int orderstype = 1;
+                          double priceDelivery = 10.0;
+                          double ordersPrice = calculateTotalPrice(cart);
+                          double finalPrice = ordersPrice -
+                              (ordersPrice * (couponDiscount / 100));
 
-                    context.read<OrderBloc>().add(CheckoutEvent(
-                      userId: userId,
-                      addressId: int.parse(selectedAddressId!),
-                      orderstype: orderstype,
-                      priceDelivery: priceDelivery,
-                      ordersPrice: finalPrice,
-                      couponId: couponId,
-                      paymentMethod: paymentMethod,
-                      couponDiscount: couponDiscount,
-                    ));
-                  },
+                          context.read<OrderBloc>().add(CheckoutEvent(
+                                userId: userId,
+                                addressId: int.parse(selectedAddressId!),
+                                orderstype: orderstype,
+                                priceDelivery: priceDelivery,
+                                ordersPrice: finalPrice,
+                                couponId: couponId,
+                                paymentMethod: paymentMethod,
+                                couponDiscount: couponDiscount,
+                              ));
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MyTheme.orangeColor,
                     padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -1241,32 +1279,32 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   child: isLoading
                       ? SizedBox(
-                    width: 20.w,
-                    height: 20.h,
-                    child: CircularProgressIndicator(
-                      color: MyTheme.whiteColor,
-                      strokeWidth: 2.w,
-                    ),
-                  )
+                          width: 20.w,
+                          height: 20.h,
+                          child: CircularProgressIndicator(
+                            color: MyTheme.whiteColor,
+                            strokeWidth: 2.w,
+                          ),
+                        )
                       : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.payment_rounded,
-                        size: 18.w,
-                        color: MyTheme.whiteColor,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Place Order (${(totalPrice - (totalPrice * (couponDiscount / 100))).toStringAsFixed(2)} EGP)',
-                        style: MyTheme.lightTheme.textTheme.displayMedium
-                            ?.copyWith(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.payment_rounded,
+                              size: 18.w,
+                              color: MyTheme.whiteColor,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              'Place Order (${(totalPrice - (totalPrice * (couponDiscount / 100))).toStringAsFixed(2)} EGP)',
+                              style: MyTheme.lightTheme.textTheme.displayMedium
+                                  ?.copyWith(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               );
             },
@@ -1278,35 +1316,38 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildEmptyCart(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Lottie.asset(
-            'assets/images/cart- 1745364559641.json',
-            width: 200.w,
-            height: 200.h,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'Your cart is empty',
-            style: MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
-              fontSize: 22.sp,
-              fontWeight: FontWeight.bold,
-              color: MyTheme.mauveColor,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 200.h,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset(
+              'assets/images/cart- 1745364559641.json',
+              width: 200.w,
+              height: 200.h,
+              fit: BoxFit.contain,
             ),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            'Start adding items now!',
-            style: MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
-              fontSize: 16.sp,
-              color: MyTheme.grayColor2,
+            SizedBox(height: 20.h),
+            Text(
+              'Your cart is empty',
+              style: MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
+                fontSize: 22.sp,
+                fontWeight: FontWeight.bold,
+                color: MyTheme.mauveColor,
+              ),
             ),
-          ),
-          SizedBox(height: 20.h),
-        ],
+            SizedBox(height: 10.h),
+            Text(
+              'Start adding items now!',
+              style: MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                fontSize: 16.sp,
+                color: MyTheme.grayColor2,
+              ),
+            ),
+            SizedBox(height: 20.h),
+          ],
+        ),
       ),
     );
   }
@@ -1315,10 +1356,12 @@ class _CartScreenState extends State<CartScreen> {
     double totalPrice = 0.0;
     final restCafeItems = cart.restCafe?.datacart ?? [];
     final hotelTouristItems = cart.hotelTourist?.datacart ?? [];
-    final allItems = [...restCafeItems, ...hotelTouristItems];
+    final offerItems = cart.offers ?? [];
+    final allItems = [...restCafeItems, ...hotelTouristItems, ...offerItems];
 
     for (var item in allItems) {
-      double price = double.tryParse(item.itemsPrice ?? '0.0') ?? 0.0;
+      double price =
+          double.tryParse(item.price ?? item.itemsPrice ?? '0.0') ?? 0.0;
       int quantity = int.tryParse(item.cartQuantity ?? '0') ?? 0;
       totalPrice += price * quantity;
     }

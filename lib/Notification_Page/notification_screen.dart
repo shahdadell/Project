@@ -40,11 +40,11 @@ class NotificationScreen extends StatelessWidget {
             ],
           ),
         ).animate().fadeIn(duration: 400.ms).slideY(
-          begin: 0.1,
-          end: 0.0,
-          duration: 400.ms,
-          curve: Curves.easeOut,
-        ),
+              begin: 0.1,
+              end: 0.0,
+              duration: 400.ms,
+              curve: Curves.easeOut,
+            ),
         centerTitle: true,
         backgroundColor: MyTheme.orangeColor,
         elevation: 4,
@@ -108,8 +108,8 @@ class NotificationScreen extends StatelessWidget {
                     ),
                     child: Text(
                       'Go to Home',
-                      style: MyTheme.lightTheme.textTheme.displayMedium
-                          ?.copyWith(
+                      style:
+                          MyTheme.lightTheme.textTheme.displayMedium?.copyWith(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -148,7 +148,7 @@ class NotificationScreen extends StatelessWidget {
                   ),
                   child: ListTile(
                     contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                     leading: _buildLeadingIcon(),
                     title: Text(
                       notification.title ?? 'No Title',
@@ -167,8 +167,8 @@ class NotificationScreen extends StatelessWidget {
                           padding: EdgeInsets.only(top: 4.h),
                           child: Text(
                             notification.body ?? 'No Body',
-                            style:
-                            MyTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                            style: MyTheme.lightTheme.textTheme.bodyMedium
+                                ?.copyWith(
                               fontSize: 14.sp,
                               color: MyTheme.grayColor2,
                             ),
@@ -180,7 +180,7 @@ class NotificationScreen extends StatelessWidget {
                         Text(
                           notification.timestamp?.toString() ?? 'Just now',
                           style:
-                          MyTheme.lightTheme.textTheme.bodySmall?.copyWith(
+                              MyTheme.lightTheme.textTheme.bodySmall?.copyWith(
                             fontSize: 12.sp,
                             color: MyTheme.grayColor,
                           ),
@@ -189,16 +189,19 @@ class NotificationScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              ).animate().fadeIn(
-                duration: 300.ms,
-                delay: (index * 100).ms,
-                curve: Curves.easeOut,
-              ).slideX(
-                begin: 0.2,
-                end: 0.0,
-                duration: 300.ms,
-                curve: Curves.easeOut,
-              );
+              )
+                  .animate()
+                  .fadeIn(
+                    duration: 300.ms,
+                    delay: (index * 100).ms,
+                    curve: Curves.easeOut,
+                  )
+                  .slideX(
+                    begin: 0.2,
+                    end: 0.0,
+                    duration: 300.ms,
+                    curve: Curves.easeOut,
+                  );
             },
           );
         },
@@ -221,4 +224,3 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 }
-

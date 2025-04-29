@@ -130,7 +130,8 @@ Widget homeTopBar(BuildContext context) {
         onTap: () {
           if (userId == null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('من فضلك سجل الدخول لعرض ملفك الشخصي')),
+              const SnackBar(
+                  content: Text('من فضلك سجل الدخول لعرض ملفك الشخصي')),
             );
           } else {
             Navigator.push(
@@ -149,6 +150,7 @@ Widget homeTopBar(BuildContext context) {
     ],
   );
 }
+
 Widget carouselSliderImage(String image) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(12),

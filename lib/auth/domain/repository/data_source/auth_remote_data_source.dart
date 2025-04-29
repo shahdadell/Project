@@ -22,5 +22,4 @@ abstract class AuthRemoteDataSource {
   Future<ResetPasswordResponse> resetPassword(
       String email, String hashedPassword);
   Future<ResendCodeResponse> resendCode(String email); // أضفنا الدالة دي
-
 }

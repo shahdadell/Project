@@ -1,11 +1,11 @@
 import 'package:graduation_project/home_screen/data/model/home_model_response/Categorydatum.dart';
 import 'package:graduation_project/home_screen/data/model/home_model_response/items_model.dart';
 import 'package:graduation_project/home_screen/data/model/item_model_response/Itemdatum.dart';
-import 'package:graduation_project/home_screen/data/model/offers_model_response/offers_model_response.dart';
+import 'package:graduation_project/home_screen/data/model/offers_model_response/offers_model_response/offers_model_response.dart';
 import 'package:graduation_project/home_screen/data/model/services_model_response/service_model.dart';
 import 'package:graduation_project/home_screen/data/model/topSelling_model_response/TopSellinModelResponse.dart';
 import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart'
-as search; // Alias
+    as search; // Alias
 
 abstract class HomeState {}
 
@@ -34,7 +34,7 @@ class HomeErrorState extends HomeState {
 class FetchOffersLoadingState extends HomeState {}
 
 class FetchOffersSuccessState extends HomeState {
-  final List<OfferData> offers;
+  final List<OffersModelResponse> offers;
   FetchOffersSuccessState({required this.offers});
 }
 

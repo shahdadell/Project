@@ -5,7 +5,6 @@ class AppEndpoints {
   //auth
   static const String register = "auth/signup.php";
   static const String login = "auth/login.php";
-  
 
   //Home
   static const String fetchHome = "home.php";
@@ -55,5 +54,6 @@ class AppEndpoints {
   static const String deleteOrder = "orders/delete.php";
   static const String orderDetails = "orders/details.php";
 
-  static const String checkCoupon = '/coupon/checkcoupon.php'; // حذفنا /outbye عشان منع التكرار
+  static const String checkCoupon =
+      '/coupon/checkcoupon.php'; // حذفنا /outbye عشان منع التكرار
 }

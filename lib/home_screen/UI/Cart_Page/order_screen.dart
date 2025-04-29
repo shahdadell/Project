@@ -104,7 +104,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     padding:
-                    EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
+                        EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
                     elevation: 5,
                     shadowColor: MyTheme.orangeColor.withOpacity(0.4),
                   ),
@@ -148,7 +148,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                   fontWeight: FontWeight.w600,
                 ),
                 unselectedLabelStyle:
-                MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
+                    MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
                 ),

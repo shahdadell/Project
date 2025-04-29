@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:graduation_project/Maps/map_picker_screen.dart';
 import 'package:graduation_project/Profile_screen/bloc/Address/Address_bloc.dart';
 import 'package:graduation_project/Profile_screen/bloc/Address/Address_event.dart';
 import 'package:graduation_project/Profile_screen/bloc/Address/Address_state.dart';
 import 'package:graduation_project/Profile_screen/data/model/response/Users%20Addresses/view_addresses/datumViewAddress.dart';
 import 'package:graduation_project/Theme/theme.dart';
 import 'adresses_widgets.dart';
+
 
 class EditAddressScreen extends StatefulWidget {
   final DatumViewAddress address;
@@ -25,26 +27,20 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   late TextEditingController addressPhoneController;
   late TextEditingController addressCityController;
   late TextEditingController addressDetailsController;
-  late TextEditingController addressLatitudeController;
-  late TextEditingController addressLongitudeController;
-  bool isDialogShown = false; // تتبع إذا كان الـ Dialog ظهر
-  bool isButtonEnabled = true; // تتبع حالة زرار Save
+  late String latitude;
+  late String longitude;
+  bool isDialogShown = false;
+  bool isButtonEnabled = true;
 
   @override
   void initState() {
     super.initState();
-    addressTitleController =
-        TextEditingController(text: widget.address.addressName);
-    addressPhoneController =
-        TextEditingController(text: widget.address.addressPhone ?? '');
-    addressCityController =
-        TextEditingController(text: widget.address.addressCity ?? '');
-    addressDetailsController =
-        TextEditingController(text: widget.address.addressStreet);
-    addressLatitudeController =
-        TextEditingController(text: widget.address.addressLat);
-    addressLongitudeController =
-        TextEditingController(text: widget.address.addressLong);
+    addressTitleController = TextEditingController(text: widget.address.addressName);
+    addressPhoneController = TextEditingController(text: widget.address.addressPhone ?? '');
+    addressCityController = TextEditingController(text: widget.address.addressCity ?? '');
+    addressDetailsController = TextEditingController(text: widget.address.addressStreet);
+    latitude = widget.address.addressLat ?? '';
+    longitude = widget.address.addressLong ?? '';
   }
 
   @override
@@ -53,8 +49,6 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     addressPhoneController.dispose();
     addressCityController.dispose();
     addressDetailsController.dispose();
-    addressLatitudeController.dispose();
-    addressLongitudeController.dispose();
     super.dispose();
   }
 
@@ -83,13 +77,13 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       );
       return false;
     }
-    if (addressLatitudeController.text.trim().isEmpty) {
+    if (latitude.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Latitude cannot be empty")),
       );
       return false;
     }
-    if (addressLongitudeController.text.trim().isEmpty) {
+    if (longitude.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Longitude cannot be empty")),
       );
@@ -108,7 +102,6 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         color: MyTheme.whiteColor,
         child: BlocConsumer<AddressBloc, AddressState>(
           listener: (context, state) {
-            // نمنع تكرار الـ Dialog
             if (isDialogShown) return;
 
             if (state is EditAddressSuccessState) {
@@ -155,7 +148,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 btnOkOnPress: () {
                   setState(() {
                     isDialogShown = false;
-                    isButtonEnabled = true; // إعادة تفعيل الزر
+                    isButtonEnabled = true;
                   });
                 },
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -187,6 +180,89 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     SizedBox(height: 16.h),
                     Column(
                       children: [
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MapPickerScreen(
+                                  initialLat: latitude,
+                                  initialLong: longitude,
+                                ),
+                              ),
+                            );
+                            if (result != null) {
+                              setState(() {
+                                latitude = result['latitude'];
+                                longitude = result['longitude'];
+                                // ملء الحقول بالبيانات اللي رجعت
+                                addressCityController.text = result['city'] ?? '';
+                                addressDetailsController.text = result['street'] ?? '';
+                              });
+                            }
+                          },
+                          icon: Icon(
+                            Icons.map,
+                            color: MyTheme.whiteColor,
+                            size: 18.w,
+                          ),
+                          label: Text(
+                            'Select Location',
+                            style: textTheme.displayMedium?.copyWith(
+                              color: MyTheme.whiteColor,
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: MyTheme.orangeColor,
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            elevation: 3,
+                            shadowColor: MyTheme.grayColor3.withOpacity(0.4),
+                            minimumSize: Size(double.infinity, 40.h),
+                          ),
+                        )
+                            .animate()
+                            .scale(
+                              begin: Offset(1.0, 1.0),
+                              end: Offset(1.03, 1.03),
+                              duration: Duration(milliseconds: 150),
+                              curve: Curves.easeInOut,
+                            )
+                            .then()
+                            .scale(
+                              begin: Offset(1.03, 1.03),
+                              end: Offset(1.0, 1.0),
+                              duration: Duration(milliseconds: 150),
+                              curve: Curves.easeInOut,
+                            ),
+                        SizedBox(height: 8.h),
+                        if (latitude.isNotEmpty && longitude.isNotEmpty)
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_pin,
+                                  color: MyTheme.orangeColor,
+                                  size: 20.w,
+                                ),
+                                SizedBox(width: 8.w),
+                                Expanded(
+                                  child: Text(
+                                    'Selected Location: Lat: $latitude, Long: $longitude',
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: MyTheme.blackColor,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        SizedBox(height: 8.h),
                         _buildButton(
                           context,
                           text: "Save Changes",
@@ -197,20 +273,17 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                               ? () {
                                   if (_validateFields()) {
                                     setState(() {
-                                      isButtonEnabled = false; // تعطيل الزر
+                                      isButtonEnabled = false;
                                     });
                                     context.read<AddressBloc>().add(
                                           EditAddressEvent(
-                                            addressId:
-                                                widget.address.addressId ?? '0',
+                                            addressId: widget.address.addressId ?? '0',
                                             name: addressTitleController.text,
                                             phone: addressPhoneController.text,
                                             city: addressCityController.text,
-                                            street:
-                                                addressDetailsController.text,
-                                            lat: addressLatitudeController.text,
-                                            long:
-                                                addressLongitudeController.text,
+                                            street: addressDetailsController.text,
+                                            lat: latitude,
+                                            long: longitude,
                                           ),
                                         );
                                   }
@@ -350,34 +423,6 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 return null;
               },
             ),
-            buildEditableAddressesField(
-              context,
-              "Latitude",
-              addressLatitudeController,
-              Icons.map,
-              isEditing: true,
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter latitude';
-                }
-                return null;
-              },
-            ),
-            buildEditableAddressesField(
-              context,
-              "Longitude",
-              addressLongitudeController,
-              Icons.map,
-              isEditing: true,
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter longitude';
-                }
-                return null;
-              },
-            ),
           ],
         ),
       ),
@@ -405,7 +450,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         ),
         elevation: 3,
         shadowColor: MyTheme.grayColor3.withOpacity(0.4),
-        minimumSize: Size(double.infinity, 30.h), // زرار طويل
+        minimumSize: Size(double.infinity, 30.h),
       ),
       child: Text(
         text,

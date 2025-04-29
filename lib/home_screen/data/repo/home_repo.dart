@@ -7,7 +7,7 @@ import 'package:graduation_project/API_Services/endpoints.dart';
 import 'package:graduation_project/home_screen/data/model/home_model_response/Categorydatum.dart';
 import 'package:graduation_project/home_screen/data/model/home_model_response/items_model.dart';
 import 'package:graduation_project/home_screen/data/model/item_model_response/Itemdatum.dart';
-import 'package:graduation_project/home_screen/data/model/offers_model_response/offers_model_response.dart';
+import 'package:graduation_project/home_screen/data/model/offers_model_response/offers_model_response/offers_model_response.dart';
 import 'package:graduation_project/home_screen/data/model/services_model_response/service_model.dart';
 import 'package:graduation_project/home_screen/data/model/topSelling_model_response/TopSellinModelResponse.dart';
 import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart'
@@ -48,23 +48,23 @@ class HomeRepo {
     }
   }
 
-  static Future<OffersModel> fetchOffers() async {
-    try {
-      var response = await DioProvider.get(endpoint: AppEndpoints.offersSlider);
-      log('Fetch Offers Response Status Code: ${response.statusCode}');
-      log('Fetch Offers Response Data: ${response.data}');
+ static Future<List<OffersModelResponse>> fetchOffers() async {
+  try {
+    var response = await DioProvider.get(endpoint: AppEndpoints.offersSlider);
+    log('Fetch Offers Response Status Code: ${response.statusCode}');
+    log('Fetch Offers Response Data: ${response.data}');
 
-      if (response.statusCode == 200 && response.data['status'] == 'success') {
-        return OffersModel.fromJson(response.data);
-      } else {
-        throw Exception(
-            'Failed to fetch offers: ${response.data['message'] ?? 'Unknown error'}');
-      }
-    } catch (e) {
-      log('Exception in fetchOffers: $e');
-      throw Exception('Error fetching offers: $e');
+    if (response.statusCode == 200) {
+      List<dynamic> offersData = response.data;
+      return offersData.map((e) => OffersModelResponse.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to fetch offers: ${response.statusMessage ?? 'Unknown error'}');
     }
+  } catch (e) {
+    log('Exception in fetchOffers: $e');
+    throw Exception('Error fetching offers: $e');
   }
+}
 
   static Future<TopSellingModelResponse> fetchTopSelling() async {
     try {

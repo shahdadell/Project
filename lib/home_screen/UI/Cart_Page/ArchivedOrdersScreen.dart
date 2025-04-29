@@ -32,7 +32,9 @@ class _ArchivedOrdersScreenState extends State<ArchivedOrdersScreen> {
 
   void _startPolling() {
     _timer = Timer.periodic(Duration(seconds: 30), (timer) {
-      context.read<OrderBloc>().add(FetchArchivedOrdersEvent(userId: widget.userId));
+      context
+          .read<OrderBloc>()
+          .add(FetchArchivedOrdersEvent(userId: widget.userId));
     });
   }
 
@@ -43,7 +45,9 @@ class _ArchivedOrdersScreenState extends State<ArchivedOrdersScreen> {
   }
 
   Future<void> _refreshArchivedOrders(BuildContext context) async {
-    context.read<OrderBloc>().add(FetchArchivedOrdersEvent(userId: widget.userId));
+    context
+        .read<OrderBloc>()
+        .add(FetchArchivedOrdersEvent(userId: widget.userId));
   }
 
   @override
@@ -105,7 +109,7 @@ class _ArchivedOrdersScreenState extends State<ArchivedOrdersScreen> {
                         Text(
                           'Check back later!',
                           style:
-                          MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                              MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
                             fontSize: 16.sp,
                             color: MyTheme.grayColor2,
                           ),
@@ -165,7 +169,7 @@ class _ArchivedOrdersScreenState extends State<ArchivedOrdersScreen> {
                       Text(
                         'No archived orders',
                         style:
-                        MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
+                            MyTheme.lightTheme.textTheme.titleMedium?.copyWith(
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
                           color: MyTheme.mauveColor,
@@ -175,7 +179,7 @@ class _ArchivedOrdersScreenState extends State<ArchivedOrdersScreen> {
                       Text(
                         'Check back later!',
                         style:
-                        MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                            MyTheme.lightTheme.textTheme.titleSmall?.copyWith(
                           fontSize: 16.sp,
                           color: MyTheme.grayColor2,
                         ),

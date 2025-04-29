@@ -12,10 +12,12 @@ import 'package:graduation_project/auth/forget_password/reset_password/ResetPass
 import 'package:graduation_project/home_screen/UI/Home_Page/home_screen.dart';
 import 'package:graduation_project/home_screen/UI/Items_Page/Items_screen.dart';
 import 'package:graduation_project/home_screen/UI/Category_Page/Services_Screen.dart';
+import 'package:graduation_project/home_screen/UI/SpecialOfferCarouselWidget/offers_screen.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/UI/WishlistScreen.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/bloc/FavoriteBloc.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/data/repo/FavoriteRepo.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_bloc.dart';
+import 'package:graduation_project/home_screen/bloc/Cart/cart_event.dart'; // استيراد CartEvent
 import 'package:graduation_project/home_screen/bloc/Home/home_bloc.dart';
 import 'package:graduation_project/home_screen/data/repo/cart_repo.dart';
 import 'package:graduation_project/local_data/shared_preference.dart';
@@ -33,27 +35,26 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 
+// تعريف GlobalKey للـ Navigator
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("Background message received: ${message.notification?.title}");
-  // الإضافة الجديدة: تخزين الإشعار في الـ local storage
   await NotificationManager.saveNotification(message);
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DioProvider.init();
-  AppLocalStorage.init();
+  await AppLocalStorage.init(); // تأكدي إن init بيرجع Future وبتستخدمي await
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // الإضافات الجديدة
   await NotificationManager.requestNotificationPermission();
   await NotificationManager.subscribeToTopics();
 
-  // الإشعارات في الـ foreground
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print("Foreground message received: ${message.notification?.title}");
     NotificationManager.saveNotification(message);
@@ -62,12 +63,13 @@ void main() async {
   runApp(const MyApp());
 }
 
-// باقي الكود زي ما هو
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final int? userId = AppLocalStorage.getData('user_id'); // جلب user_id
+
     return ScreenUtilInit(
       designSize: const Size(360, 640),
       minTextAdapt: true,
@@ -76,15 +78,17 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(create: (context) => HomeBloc()),
           BlocProvider(
-            create: (context) => CartBloc(cartRepo: CartRepo()),
+            create: (context) => CartBloc(cartRepo: CartRepo())
+              ..add(userId != null ? FetchCartEvent(userId: userId) : FetchCartEvent(userId: 0)),
           ),
           BlocProvider(
             create: (context) => AddressBloc(AddressRepo()),
           ),
           BlocProvider(
-            create: (context) => FavoriteBloc(favoriteRepo: FavoriteRepo())),
+              create: (context) => FavoriteBloc(favoriteRepo: FavoriteRepo())),
         ],
         child: MaterialApp(
+          navigatorKey: navigatorKey, // تمرير الـ GlobalKey للـ MaterialApp
           debugShowCheckedModeBanner: false,
           theme: MyTheme.lightTheme,
           initialRoute: SplashScreen.routName,
@@ -98,29 +102,31 @@ class MyApp extends StatelessWidget {
             SearchScreen.routeName: (context) => const SearchScreen(),
             OrdersScreen.routeName: (context) => const OrdersScreen(),
             OtpScreenForgetPassword.routName: (context) =>
-                const OtpScreenForgetPassword(),
+            const OtpScreenForgetPassword(),
             ForgetPassword.routName: (context) => const ForgetPassword(),
             ResetPassword.routName: (context) {
               final String email =
-                  ModalRoute.of(context)!.settings.arguments as String;
+              ModalRoute.of(context)!.settings.arguments as String;
               return ResetPassword(email: email);
             },
             ServiceItemsScreen.routeName: (context) {
               final args = ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>;
+              as Map<String, dynamic>;
               return ServiceItemsScreen(serviceId: args['serviceId']);
             },
             ProfileScreen.routeName: (context) => const ProfileScreen(),
             EditProfileScreen.routeName: (context) {
               final args = ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>;
+              as Map<String, dynamic>;
               return EditProfileScreen(
                 userId: args['userId'],
                 profile: args['profile'],
               );
             },
             WishlistScreen.routeName: (context) => const WishlistScreen(),
-            NotificationScreen.routeName: (context) => const NotificationScreen(),
+            NotificationScreen.routeName: (context) =>
+            const NotificationScreen(),
+            OffersScreen.routeName: (context) => const OffersScreen(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == ServicesScreen.routeName) {
