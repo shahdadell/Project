@@ -90,7 +90,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     padding:
-                        EdgeInsets.symmetric(horizontal: 40.w, vertical: 14.h),
+                    EdgeInsets.symmetric(horizontal: 40.w, vertical: 14.h),
                     elevation: 5,
                     shadowColor: MyTheme.orangeColor.withOpacity(0.4),
                   ),
@@ -104,11 +104,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 ),
               ],
             ).animate().fadeIn(duration: 600.ms).slideY(
-                  begin: 0.2,
-                  end: 0.0,
-                  duration: 600.ms,
-                  curve: Curves.easeOut,
-                ),
+              begin: 0.2,
+              end: 0.0,
+              duration: 600.ms,
+              curve: Curves.easeOut,
+            ),
           ),
         ),
       );
@@ -157,6 +157,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
             ),
           );
         } else if (state is DeleteFavoriteItemSuccessState) {
+          // تحديث القايمة بعد الحذف
+          final int? userId = AppLocalStorage.getData('user_id');
+          if (userId != null) {
+            context.read<FavoriteBloc>().add(FetchFavoriteEvent(userId: userId));
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
@@ -251,7 +256,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                                     horizontal: 30.w, vertical: 12.h),
                                 elevation: 5,
                                 shadowColor:
-                                    MyTheme.orangeColor.withOpacity(0.4),
+                                MyTheme.orangeColor.withOpacity(0.4),
                               ),
                               child: Text(
                                 'Retry',
@@ -270,7 +275,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 );
               }
 
-              if (_favorites.isEmpty && state is! FetchFavoriteSuccessState) {
+              if (_favorites.isEmpty) {
                 return RefreshIndicator(
                   onRefresh: () => _refreshFavorites(context),
                   color: MyTheme.orangeColor,
@@ -286,7 +291,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 color: MyTheme.orangeColor,
                 child: ListView.builder(
                   padding:
-                      EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+                  EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
                   itemCount: _favorites.length,
                   itemBuilder: (context, index) {
                     final item = _favorites[index];
@@ -296,7 +301,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       },
                       builder: (context, state) {
                         bool isLoading =
-                            state is DeleteFavoriteItemLoadingState;
+                        state is DeleteFavoriteItemLoadingState;
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(12.r),
                           child: Container(
@@ -324,36 +329,36 @@ class _WishlistScreenState extends State<WishlistScreen> {
                                   borderRadius: BorderRadius.circular(8.r),
                                   child: item.itemsImage != null
                                       ? CachedNetworkImage(
-                                          imageUrl: item.itemsImage!,
-                                          width: 70.w,
-                                          height: 60.h,
-                                          fit: BoxFit.cover,
-                                          memCacheHeight: (60.h).toInt(),
-                                          memCacheWidth: (60.w).toInt(),
-                                          placeholder: (context, url) => Center(
-                                            child: CircularProgressIndicator(
-                                              color: MyTheme.orangeColor,
-                                              strokeWidth: 2.w,
-                                            ),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              Icon(
-                                            Icons.favorite_rounded,
-                                            size: 24.w,
-                                            color: MyTheme.orangeColor,
-                                          ),
-                                        )
-                                      : Icon(
+                                    imageUrl: item.itemsImage!,
+                                    width: 70.w,
+                                    height: 60.h,
+                                    fit: BoxFit.cover,
+                                    memCacheHeight: (60.h).toInt(),
+                                    memCacheWidth: (60.w).toInt(),
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyTheme.orangeColor,
+                                        strokeWidth: 2.w,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(
                                           Icons.favorite_rounded,
                                           size: 24.w,
                                           color: MyTheme.orangeColor,
                                         ),
+                                  )
+                                      : Icon(
+                                    Icons.favorite_rounded,
+                                    size: 24.w,
+                                    color: MyTheme.orangeColor,
+                                  ),
                                 ),
                                 SizedBox(width: 12.w),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item.itemsName ?? 'No Name',
@@ -385,14 +390,14 @@ class _WishlistScreenState extends State<WishlistScreen> {
                                   onTap: isLoading
                                       ? null
                                       : () {
-                                          context.read<FavoriteBloc>().add(
-                                                DeleteFavoriteItemEvent(
-                                                  userId: userId,
-                                                  itemId: int.parse(
-                                                      item.itemsId ?? '0'),
-                                                ),
-                                              );
-                                        },
+                                    context.read<FavoriteBloc>().add(
+                                      DeleteFavoriteItemEvent(
+                                        userId: userId,
+                                        itemId: int.parse(
+                                            item.itemsId ?? '0'),
+                                      ),
+                                    );
+                                  },
                                   child: Container(
                                     padding: EdgeInsets.all(5.w),
                                     decoration: BoxDecoration(
@@ -401,18 +406,18 @@ class _WishlistScreenState extends State<WishlistScreen> {
                                     ),
                                     child: isLoading
                                         ? SizedBox(
-                                            width: 18.w,
-                                            height: 18.h,
-                                            child: CircularProgressIndicator(
-                                              color: MyTheme.orangeColor,
-                                              strokeWidth: 2.w,
-                                            ),
-                                          )
+                                      width: 18.w,
+                                      height: 18.h,
+                                      child: CircularProgressIndicator(
+                                        color: MyTheme.orangeColor,
+                                        strokeWidth: 2.w,
+                                      ),
+                                    )
                                         : Icon(
-                                            Icons.delete_rounded,
-                                            size: 18.w,
-                                            color: MyTheme.orangeColor,
-                                          ),
+                                      Icons.delete_rounded,
+                                      size: 18.w,
+                                      color: MyTheme.orangeColor,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -422,11 +427,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
                             .animate()
                             .fadeIn(duration: 500.ms, delay: (100 * index).ms)
                             .slideX(
-                              begin: 0.2,
-                              end: 0.0,
-                              duration: 500.ms,
-                              curve: Curves.easeOut,
-                            );
+                          begin: 0.2,
+                          end: 0.0,
+                          duration: 500.ms,
+                          curve: Curves.easeOut,
+                        );
                       },
                     );
                   },
@@ -456,11 +461,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
           ],
         ),
       ).animate().fadeIn(duration: 400.ms).slideY(
-            begin: 0.1,
-            end: 0.0,
-            duration: 400.ms,
-            curve: Curves.easeOut,
-          ),
+        begin: 0.1,
+        end: 0.0,
+        duration: 400.ms,
+        curve: Curves.easeOut,
+      ),
       centerTitle: true,
       backgroundColor: MyTheme.orangeColor,
       elevation: 5,
@@ -507,10 +512,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 600.ms).slideY(
-          begin: 0.2,
-          end: 0.0,
-          duration: 600.ms,
-          curve: Curves.easeOut,
-        );
+      begin: 0.2,
+      end: 0.0,
+      duration: 600.ms,
+      curve: Curves.easeOut,
+    );
   }
 }

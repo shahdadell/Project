@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graduation_project/Theme/theme.dart';
-import 'package:graduation_project/home_screen/UI/DiscountListWidget/DiscountPage/item_details_dialog.dart';
-import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart'
-    as searchModel;
+import 'package:graduation_project/home_screen/UI/SearchFieldWidget/ItemDetailsPage.dart'; // استيراد الصفحة الجديدة
+import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart' as searchModel;
 
 class SearchResultCard extends StatelessWidget {
   final searchModel.Data service;
@@ -19,8 +18,7 @@ class SearchResultCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: MyTheme.whiteColor,
         borderRadius: BorderRadius.circular(15.r),
-        border:
-            Border.all(color: MyTheme.blueColor.withOpacity(0.3), width: 1.w),
+        border: Border.all(color: MyTheme.blueColor.withOpacity(0.3), width: 1.w),
         boxShadow: [
           BoxShadow(
             color: MyTheme.blackColor.withOpacity(0.03),
@@ -44,8 +42,7 @@ class SearchResultCard extends StatelessWidget {
                   width: 60.w,
                   height: 50.h,
                   color: MyTheme.grayColor.withOpacity(0.2),
-                  child:
-                      Icon(Icons.error, size: 20.sp, color: MyTheme.grayColor2),
+                  child: Icon(Icons.error, size: 20.sp, color: MyTheme.grayColor2),
                 ),
               ),
             ),
@@ -80,8 +77,7 @@ class SearchResultCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.star,
-                              color: MyTheme.yellowColor, size: 16.sp),
+                          Icon(Icons.star, color: MyTheme.yellowColor, size: 16.sp),
                           SizedBox(width: 4.w),
                           Text(
                             service.serviceRating ?? '0.0',
@@ -93,8 +89,7 @@ class SearchResultCard extends StatelessWidget {
                         ],
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 6.w, vertical: 2.h),
+                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                         decoration: BoxDecoration(
                           color: service.serviceActive == "1"
                               ? MyTheme.greenColor.withOpacity(0.2)
@@ -102,13 +97,9 @@ class SearchResultCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: Text(
-                          service.serviceActive == "1"
-                              ? 'Available'
-                              : 'Not Available',
+                          service.serviceActive == "1" ? 'Available' : 'Not Available',
                           style: textTheme.bodySmall?.copyWith(
-                            color: service.serviceActive == "1"
-                                ? MyTheme.greenColor
-                                : MyTheme.redColor,
+                            color: service.serviceActive == "1" ? MyTheme.greenColor : MyTheme.redColor,
                             fontSize: 10.sp,
                           ),
                         ),
@@ -140,16 +131,20 @@ class ItemResultCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // فتح نفس Dialog المستخدم في ItemsGrid
-        showItemDetailsDialog(context, item);
+        // الانتقال إلى صفحة التفاصيل الجديدة
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemDetailsPage(item: item),
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
         decoration: BoxDecoration(
           color: MyTheme.whiteColor,
           borderRadius: BorderRadius.circular(15.r),
-          border:
-              Border.all(color: MyTheme.blueColor.withOpacity(0.3), width: 1.w),
+          border: Border.all(color: MyTheme.blueColor.withOpacity(0.3), width: 1.w),
           boxShadow: [
             BoxShadow(
               color: MyTheme.blackColor.withOpacity(0.03),
@@ -173,8 +168,7 @@ class ItemResultCard extends StatelessWidget {
                     width: 60.w,
                     height: 50.h,
                     color: MyTheme.grayColor.withOpacity(0.2),
-                    child: Icon(Icons.error,
-                        size: 20.sp, color: MyTheme.grayColor2),
+                    child: Icon(Icons.error, size: 20.sp, color: MyTheme.grayColor2),
                   ),
                 ),
               ),
@@ -232,8 +226,7 @@ class ItemResultCard extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 6.w, vertical: 2.h),
+                          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                           decoration: BoxDecoration(
                             color: item.itemsActive == "1"
                                 ? MyTheme.greenColor.withOpacity(0.2)
@@ -241,9 +234,7 @@ class ItemResultCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10.r),
                           ),
                           child: Text(
-                            item.itemsActive == "1"
-                                ? 'Available'
-                                : 'Not Available',
+                            item.itemsActive == "1" ? 'Available' : 'Not Available',
                             style: textTheme.bodySmall?.copyWith(
                               color: item.itemsActive == "1"
                                   ? MyTheme.greenColor
