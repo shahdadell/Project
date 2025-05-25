@@ -8,7 +8,7 @@ import 'package:graduation_project/home_screen/bloc/Home/home_bloc.dart';
 import 'package:graduation_project/home_screen/bloc/Home/home_event.dart';
 import 'package:graduation_project/home_screen/bloc/Home/home_state.dart';
 import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart'
-as searchModel;
+    as searchModel;
 import 'package:graduation_project/home_screen/UI/SearchFieldWidget/SearchResultCard.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -22,17 +22,18 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   Timer? _debounce;
   String _lastQuery = '';
-  late HomeBloc _homeBloc;
+  late HomeBloc _homeBloc; // نحفظ مرجع للـ HomeBloc
 
   @override
   void initState() {
     super.initState();
-    _homeBloc = context.read<HomeBloc>();
+    _homeBloc = context.read<HomeBloc>(); // نحصل على الـ HomeBloc هنا
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    // نستخدم المرجع المحفوظ بدل الـ context
     _homeBloc.add(ClearSearchEvent());
     super.dispose();
   }
@@ -41,7 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
     _lastQuery = query;
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      print('Search Query: $query');
+      print('Search Query: $query'); // للتصحيح
       if (query.trim().isEmpty) {
         _homeBloc.add(ClearSearchEvent());
       } else {
@@ -57,39 +58,32 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: MyTheme.whiteColor,
       appBar: AppBar(
+        // backgroundColor: Colors.transparent,
         leading: InkWell(
           onTap: () => Navigator.pop(context),
           child: Padding(
             padding: EdgeInsets.all(12.w),
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: MyTheme.whiteColor,
-              size: 24.w,
-            ),
+            child: Icon(Icons.arrow_back_ios,
+                color: MyTheme.whiteColor, size: 24.w),
           ),
         ),
         title: Text(
           "Search",
-          style: MyTheme.lightTheme.textTheme.displayLarge?.copyWith(
-            fontSize: 22.sp,
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                color: MyTheme.grayColor3,
-                blurRadius: 3.r,
-                offset: Offset(1, 1),
-              ),
-            ],
-          ),
+          style: textTheme.displayLarge,
         ),
         centerTitle: true,
         backgroundColor: MyTheme.orangeColor,
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20.r),
-          ),
-        ),
+        // elevation: 4,
+        // shadowColor: Colors.black.withOpacity(0.3),
+        // flexibleSpace: Container(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [MyTheme.orangeColor, Colors.orange[400]!],
+        //       begin: Alignment.topLeft,
+        //       end: Alignment.bottomRight,
+        //     ),
+        //   ),
+        // ),
       ),
       body: Column(
         children: [
@@ -103,11 +97,11 @@ class _SearchScreenState extends State<SearchScreen> {
           Expanded(
             child: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
-                print('Current State: $state');
+                print('Current State: $state'); // للتصحيح
                 if (state is FetchSearchLoadingState) {
                   return Center(
                     child:
-                    CircularProgressIndicator(color: MyTheme.orangeColor),
+                        CircularProgressIndicator(color: MyTheme.orangeColor),
                   );
                 } else if (state is FetchSearchSuccessState) {
                   if (state.services.isEmpty && state.items.isEmpty) {
@@ -173,6 +167,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   );
                 }
+                // لأي حالة تانية
                 return Center(
                   child: Text(
                     "Find Something To Start 👀",

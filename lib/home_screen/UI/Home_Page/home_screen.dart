@@ -30,14 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
     // Fetch data immediately when the screen loads
     context.read<HomeBloc>().add(FetchHomeDataEvent(null));
     context.read<HomeBloc>().add(FetchTopSellingEvent());
-    context.read<HomeBloc>().add(FetchOffersEvent());
+    context.read<HomeBloc>().add(FetchOffersEvent()); // Add FetchOffersEvent
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       if (kDebugMode) {
         print("Timer: Refreshing home data");
       }
       context.read<HomeBloc>().add(FetchHomeDataEvent(null));
       context.read<HomeBloc>().add(FetchTopSellingEvent());
-      context.read<HomeBloc>().add(FetchOffersEvent());
+      context.read<HomeBloc>().add(FetchOffersEvent()); // Add to timer
     });
   }
 

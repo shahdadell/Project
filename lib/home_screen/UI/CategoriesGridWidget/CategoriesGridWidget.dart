@@ -40,10 +40,10 @@ class CategoriesGridWidget extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ServicesScreen(
                           categoryId:
-                              state.categories[index].categoriesId.toString(),
+                          state.categories[index].categoriesId.toString(),
                           categoryName:
-                              state.categories[index].categoriesName ??
-                                  'Unknown',
+                          state.categories[index].categoriesName ??
+                              'Unknown',
                         ),
                       ),
                     );
@@ -104,8 +104,26 @@ class CategoriesGridWidget extends StatelessWidget {
           return SizedBox(
             height: 150.h,
             child: Center(
-                child: Text("Error: ${state.message}",
-                    style: TextStyle(fontSize: 14.sp))),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 50.w,
+                    color: Colors.redAccent,
+                  ),
+                  SizedBox(height: 10.h),
+                  Text(
+                    "Failed to Load Home Data",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         }
         return const SizedBox.shrink();

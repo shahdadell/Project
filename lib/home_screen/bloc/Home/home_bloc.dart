@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/home_screen/bloc/Home/home_event.dart';
 import 'package:graduation_project/home_screen/bloc/Home/home_state.dart';
 import 'package:graduation_project/home_screen/data/repo/home_repo.dart';
-
 import '../../data/model/home_model_response/Categorydatum.dart';
 import '../../data/model/home_model_response/items_model.dart';
 import '../../data/model/topSelling_model_response/TopSellinModelResponse.dart';
@@ -73,29 +72,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (kDebugMode) {
         print("Error in fetchHomeData: $e");
       }
-      emit(HomeErrorState(message: 'Error loading home data: $e'));
+      emit(HomeErrorState(message: 'Failed to Load Home Data'));
     }
   }
 
- Future<void> fetchOffers(
-    FetchOffersEvent event, Emitter<HomeState> emit) async {
-  if (kDebugMode) {
-    print("FetchOffersEvent Started");
-  }
-  emit(FetchOffersLoadingState());
-  try {
-    final offers = await HomeRepo.fetchOffers();
+  Future<void> fetchOffers(
+      FetchOffersEvent event, Emitter<HomeState> emit) async {
     if (kDebugMode) {
-      print("FetchOffersEvent Succeeded with ${offers.length} offers");
+      print("FetchOffersEvent Started");
     }
-    emit(FetchOffersSuccessState(offers: offers));
-  } catch (e) {
-    if (kDebugMode) {
-      print("FetchOffersEvent Failed: $e");
+    emit(FetchOffersLoadingState());
+    try {
+      final offers = await HomeRepo.fetchOffers();
+      if (kDebugMode) {
+        print("FetchOffersEvent Succeeded with ${offers.length} offers");
+      }
+      emit(FetchOffersSuccessState(offers: offers));
+    } catch (e) {
+      if (kDebugMode) {
+        print("FetchOffersEvent Failed: $e");
+      }
+      emit(FetchOffersErrorState(message: e.toString()));
     }
-    emit(FetchOffersErrorState(message: e.toString()));
   }
-}
 
   Future<void> fetchTopSelling(
       FetchTopSellingEvent event, Emitter<HomeState> emit) async {

@@ -17,25 +17,24 @@ AppBar buildAppBar(BuildContext context) {
     ),
     title: Text(
       "All Discounts",
-      style: MyTheme.lightTheme.textTheme.displayLarge?.copyWith(
-        fontSize: 22.sp,
+      style: TextStyle(
+        fontSize: 20.sp,
+        color: MyTheme.whiteColor,
         fontWeight: FontWeight.bold,
-        shadows: [
-          Shadow(
-            color: MyTheme.grayColor3,
-            blurRadius: 3.r,
-            offset: Offset(1, 1),
-          ),
-        ],
       ),
     ),
-    centerTitle: true,
     backgroundColor: MyTheme.orangeColor,
-    elevation: 5,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(20.r),
-      ),
-    ),
+    centerTitle: true,
+    // elevation: 4,
+    // shadowColor: Colors.black.withOpacity(0.3),
+    // flexibleSpace: Container(
+    //   decoration: BoxDecoration(
+    //     gradient: LinearGradient(
+    //       colors: [MyTheme.orangeColor, Colors.orange[400]!],
+    //       begin: Alignment.topLeft,
+    //       end: Alignment.bottomRight,
+    //     ),
+    //   ),
+    // ),
   );
 }

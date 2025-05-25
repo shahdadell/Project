@@ -64,7 +64,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       final response = await CartRepo.deleteCartItem(
         userId: event.userId,
         itemId: event.itemId,
-        type: event.type, // تمرير حقل type
       );
       emit(DeleteCartItemSuccessState(deleteResponse: response));
       add(FetchCartEvent(userId: event.userId));

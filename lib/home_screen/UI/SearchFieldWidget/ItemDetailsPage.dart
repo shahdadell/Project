@@ -9,7 +9,8 @@ import 'package:graduation_project/home_screen/Wishlist_Screen/bloc/FavoriteStat
 import 'package:graduation_project/home_screen/bloc/Cart/cart_bloc.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_event.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_state.dart';
-import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart' as searchModel;
+import 'package:graduation_project/home_screen/data/model/search_model_response/SearchModelResponse.dart'
+    as searchModel;
 import 'package:graduation_project/local_data/shared_preference.dart';
 
 class ItemDetailsPage extends StatefulWidget {
@@ -32,9 +33,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     final itemId = int.tryParse(widget.item.itemsId?.toString() ?? '0') ?? 0;
     if (userId != null && itemId != 0) {
       context.read<FavoriteBloc>().add(CheckFavoriteStatusEvent(
-        userId: userId,
-        itemId: itemId,
-      ));
+            userId: userId,
+            itemId: itemId,
+          ));
     }
   }
 
@@ -97,26 +98,31 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 160.h, // تصغير حجم الصورة
-                      child: widget.item.itemsImage != null && widget.item.itemsImage!.isNotEmpty
+                      child: widget.item.itemsImage != null &&
+                              widget.item.itemsImage!.isNotEmpty
                           ? Image.network(
-                        widget.item.itemsImage!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: MyTheme.grayColor.withOpacity(0.2),
-                          child: Icon(Icons.broken_image, size: 30.sp, color: MyTheme.grayColor2),
-                        ),
-                      )
+                              widget.item.itemsImage!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                color: MyTheme.grayColor.withOpacity(0.2),
+                                child: Icon(Icons.broken_image,
+                                    size: 30.sp, color: MyTheme.grayColor2),
+                              ),
+                            )
                           : Container(
-                        color: MyTheme.grayColor.withOpacity(0.2),
-                        child: Icon(Icons.broken_image, size: 30.sp, color: MyTheme.grayColor2),
-                      ),
+                              color: MyTheme.grayColor.withOpacity(0.2),
+                              child: Icon(Icons.broken_image,
+                                  size: 30.sp, color: MyTheme.grayColor2),
+                            ),
                     ),
                     if (discount > 0)
                       Positioned(
                         top: 8.h,
                         right: 8.w,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 6.w, vertical: 3.h),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [Colors.redAccent, Colors.red[700]!],
@@ -150,7 +156,10 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [MyTheme.whiteColor, MyTheme.grayColor.withOpacity(0.05)],
+                    colors: [
+                      MyTheme.whiteColor,
+                      MyTheme.grayColor.withOpacity(0.05)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -211,7 +220,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               style: textTheme.bodyMedium?.copyWith(
                                 color: MyTheme.grayColor2,
                                 fontSize: 12.sp,
-                                decoration: discount > 0 ? TextDecoration.lineThrough : null,
+                                decoration: discount > 0
+                                    ? TextDecoration.lineThrough
+                                    : null,
                               ),
                             ),
                           ],
@@ -272,7 +283,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
 
                     // الحالة
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: widget.item.itemsActive == "1"
                             ? MyTheme.greenColor.withOpacity(0.2)
@@ -280,9 +292,13 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Text(
-                        widget.item.itemsActive == "1" ? 'Available' : 'Not Available',
+                        widget.item.itemsActive == "1"
+                            ? 'Available'
+                            : 'Not Available',
                         style: textTheme.bodyMedium?.copyWith(
-                          color: widget.item.itemsActive == "1" ? MyTheme.greenColor : MyTheme.redColor,
+                          color: widget.item.itemsActive == "1"
+                              ? MyTheme.greenColor
+                              : MyTheme.redColor,
                           fontSize: 12.sp,
                         ),
                       ),
@@ -364,12 +380,14 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   child: BlocBuilder<FavoriteBloc, FavoriteState>(
                     builder: (context, state) {
                       bool isFavorite = false;
-                      if (state is CheckFavoriteStatusSuccessState && state.itemId == itemId) {
+                      if (state is CheckFavoriteStatusSuccessState &&
+                          state.itemId == itemId) {
                         isFavorite = state.isFavorite;
                       }
 
                       return _buildActionButton(
-                        icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                        icon:
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
                         color: Colors.redAccent,
                         onTap: () {
                           if (userId == null) {
@@ -391,24 +409,24 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           }
                           if (isFavorite) {
                             context.read<FavoriteBloc>().add(
-                              DeleteFavoriteItemEvent(
-                                userId: userId,
-                                itemId: itemId,
-                              ),
-                            );
+                                  DeleteFavoriteItemEvent(
+                                    userId: userId,
+                                    itemId: itemId,
+                                  ),
+                                );
                           } else {
                             context.read<FavoriteBloc>().add(
-                              AddToFavoriteEvent(
-                                userId: userId,
-                                itemId: itemId,
-                              ),
-                            );
+                                  AddToFavoriteEvent(
+                                    userId: userId,
+                                    itemId: itemId,
+                                  ),
+                                );
                             context.read<FavoriteBloc>().add(
-                              CheckFavoriteStatusEvent(
-                                userId: userId,
-                                itemId: itemId,
-                              ),
-                            );
+                                  CheckFavoriteStatusEvent(
+                                    userId: userId,
+                                    itemId: itemId,
+                                  ),
+                                );
                           }
                         },
                       );
@@ -492,12 +510,13 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       if (userId != null) {
                         if (itemId != 0) {
                           context.read<CartBloc>().add(
-                            AddToCartEvent(
-                              userId: userId,
-                              itemId: itemId,
-                              quantity: quantity,
-                            ),
-                          );
+                                AddToCartEvent(
+                                  userId: userId,
+                                  itemId: itemId,
+                                  quantity: quantity,
+                                  // type: 'item',
+                                ),
+                              );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

@@ -17,7 +17,6 @@ import 'package:graduation_project/home_screen/Wishlist_Screen/UI/WishlistScreen
 import 'package:graduation_project/home_screen/Wishlist_Screen/bloc/FavoriteBloc.dart';
 import 'package:graduation_project/home_screen/Wishlist_Screen/data/repo/FavoriteRepo.dart';
 import 'package:graduation_project/home_screen/bloc/Cart/cart_bloc.dart';
-import 'package:graduation_project/home_screen/bloc/Cart/cart_event.dart'; // استيراد CartEvent
 import 'package:graduation_project/home_screen/bloc/Home/home_bloc.dart';
 import 'package:graduation_project/home_screen/data/repo/cart_repo.dart';
 import 'package:graduation_project/local_data/shared_preference.dart';
@@ -47,7 +46,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DioProvider.init();
-  await AppLocalStorage.init(); // تأكدي إن init بيرجع Future وبتستخدمي await
+  AppLocalStorage.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -68,8 +67,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int? userId = AppLocalStorage.getData('user_id'); // جلب user_id
-
     return ScreenUtilInit(
       designSize: const Size(360, 640),
       minTextAdapt: true,
@@ -78,8 +75,7 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(create: (context) => HomeBloc()),
           BlocProvider(
-            create: (context) => CartBloc(cartRepo: CartRepo())
-              ..add(userId != null ? FetchCartEvent(userId: userId) : FetchCartEvent(userId: 0)),
+            create: (context) => CartBloc(cartRepo: CartRepo()),
           ),
           BlocProvider(
             create: (context) => AddressBloc(AddressRepo()),
@@ -102,22 +98,22 @@ class MyApp extends StatelessWidget {
             SearchScreen.routeName: (context) => const SearchScreen(),
             OrdersScreen.routeName: (context) => const OrdersScreen(),
             OtpScreenForgetPassword.routName: (context) =>
-            const OtpScreenForgetPassword(),
+                const OtpScreenForgetPassword(),
             ForgetPassword.routName: (context) => const ForgetPassword(),
             ResetPassword.routName: (context) {
               final String email =
-              ModalRoute.of(context)!.settings.arguments as String;
+                  ModalRoute.of(context)!.settings.arguments as String;
               return ResetPassword(email: email);
             },
             ServiceItemsScreen.routeName: (context) {
               final args = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
+                  as Map<String, dynamic>;
               return ServiceItemsScreen(serviceId: args['serviceId']);
             },
             ProfileScreen.routeName: (context) => const ProfileScreen(),
             EditProfileScreen.routeName: (context) {
               final args = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
+                  as Map<String, dynamic>;
               return EditProfileScreen(
                 userId: args['userId'],
                 profile: args['profile'],
@@ -125,7 +121,7 @@ class MyApp extends StatelessWidget {
             },
             WishlistScreen.routeName: (context) => const WishlistScreen(),
             NotificationScreen.routeName: (context) =>
-            const NotificationScreen(),
+                const NotificationScreen(),
             OffersScreen.routeName: (context) => const OffersScreen(),
           },
           onGenerateRoute: (settings) {

@@ -31,12 +31,10 @@ class FetchCartEvent extends CartEvent {
 class DeleteCartItemEvent extends CartEvent {
   final int userId;
   final int itemId;
-  final String type; // إضافة حقل type
 
   DeleteCartItemEvent({
     required this.userId,
     required this.itemId,
-    required this.type,
   });
 }
 
